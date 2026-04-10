@@ -24,6 +24,7 @@
             border-radius: 5px;
             border: none;
             margin-bottom: 10px;
+            outline: none;
         }
 
         .bouton-jouer {
@@ -65,11 +66,11 @@
     <div class="profil-box">
         <div id="affichage-pseudo">
             <p>Bienvenue, <strong id="pseudo-nom">Dresseur</strong> !</p>
-            <button onclick="changerPseudo()" style="font-size: 0.7em;">Modifier</button>
+            <button onclick="changerPseudo()" style="font-size: 0.7em; cursor: pointer;">Changer de pseudo</button>
         </div>
         
         <div id="formulaire-pseudo" style="display: none;">
-            <input type="text" id="input-pseudo" placeholder="Ton pseudo...">
+            <input type="text" id="input-pseudo" placeholder="Entre ton pseudo...">
             <br>
             <button class="bouton-menu" onclick="sauvegarderPseudo()">Valider</button>
         </div>
@@ -96,18 +97,21 @@
         const textePseudo = document.getElementById('pseudo-nom');
         const inputPseudo = document.getElementById('input-pseudo');
 
-        // Au chargement : on vérifie si un pseudo existe déjà
+        // Vérification du pseudo au démarrage
         let pseudoSauvegarde = localStorage.getItem('pseudoPoke');
 
         if (pseudoSauvegarde) {
             textePseudo.innerText = pseudoSauvegarde;
+            zoneAffichage.style.display = "block";
+            zoneFormulaire.style.display = "none";
         } else {
-            changerPseudo(); // Si rien, on demande d'en entrer un
+            zoneAffichage.style.display = "none";
+            zoneFormulaire.style.display = "block";
         }
 
         function sauvegarderPseudo() {
             let nouveauPseudo = inputPseudo.value;
-            if (nouveauPseudo.length > 0) {
+            if (nouveauPseudo.trim().length > 0) {
                 localStorage.setItem('pseudoPoke', nouveauPseudo);
                 textePseudo.innerText = nouveauPseudo;
                 zoneAffichage.style.display = "block";
@@ -119,6 +123,9 @@
             zoneAffichage.style.display = "none";
             zoneFormulaire.style.display = "block";
         }
+
+        // Commande pour forcer la suppression de l'ancien argent des tests précédents
+        localStorage.removeItem('argentVegechou');
     </script>
 
 </body>
