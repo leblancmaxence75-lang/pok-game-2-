@@ -8,9 +8,7 @@
             font-family: sans-serif;
         }
 
-        h1 {
-            color: #ee1515;
-        }
+        h1 { color: #ee1515; }
 
         .bouton-jouer {
             background-color: gold;
@@ -21,6 +19,7 @@
             cursor: pointer;
             border: none;
             font-size: 1.2em;
+            margin-bottom: 20px;
         }
 
         .bouton-menu {
@@ -31,6 +30,17 @@
             cursor: pointer;
             margin: 5px;
             border: 1px solid #555;
+            text-decoration: none; /* Pour le lien */
+            display: inline-block;
+        }
+
+        .stats-box {
+            background: #222;
+            border: 1px solid gold;
+            padding: 10px;
+            width: 200px;
+            margin: 20px auto;
+            border-radius: 8px;
         }
 
         footer {
@@ -45,19 +55,42 @@
     
     <h1>POKÉ-BATTLE 2</h1>
 
-    <div style="margin-top: 50px;">
-        <button class="bouton-jouer">JOUER</button>
+    <div class="stats-box">
+        Monnaie : <span id="argent-display">0</span> 🪙
     </div>
 
-    <div style="margin-top: 20px;">
+    <div>
+        <button class="bouton-jouer" onclick="ajouterArgent()">JOUER (Gagner 10 coins)</button>
+    </div>
+
+    <div>
         <button class="bouton-menu">PARAMÈTRES</button>
         <button class="bouton-menu">BOUTIQUE</button>
         <button class="bouton-menu">MULTIJOUEUR</button>
+        <a href="https://poke-multi.vercel.app" class="bouton-menu">RETOUR POKÉ-BATTLE 1</a>
     </div>
 
     <footer>
         Réalisé par Vegechou, By Vegechou
     </footer>
+
+    <script>
+        // --- SYSTÈME DE SAUVEGARDE (JS) ---
+
+        // 1. On récupère l'argent sauvegardé au chargement de la page
+        let monArgent = localStorage.getItem('argentVegechou') || 0;
+        document.getElementById('argent-display').innerText = monArgent;
+
+        // 2. Fonction pour ajouter de l'argent et sauvegarder
+        function ajouterArgent() {
+            monArgent = parseInt(monArgent) + 10; // On ajoute 10
+            document.getElementById('argent-display').innerText = monArgent; // On affiche
+            
+            // On enregistre dans la mémoire du navigateur
+            localStorage.setItem('argentVegechou', monArgent);
+            alert("Argent sauvegardé ! Même si tu fermes la page, il restera.");
+        }
+    </script>
 
 </body>
 </html>
