@@ -10,6 +10,22 @@
 
         h1 { color: #ee1515; }
 
+        .profil-box {
+            background: #222;
+            border: 1px solid #ee1515;
+            padding: 15px;
+            width: 300px;
+            margin: 20px auto;
+            border-radius: 8px;
+        }
+
+        input {
+            padding: 8px;
+            border-radius: 5px;
+            border: none;
+            margin-bottom: 10px;
+        }
+
         .bouton-jouer {
             background-color: gold;
             color: black;
@@ -19,7 +35,7 @@
             cursor: pointer;
             border: none;
             font-size: 1.2em;
-            margin-bottom: 20px;
+            margin-top: 10px;
         }
 
         .bouton-menu {
@@ -30,17 +46,8 @@
             cursor: pointer;
             margin: 5px;
             border: 1px solid #555;
-            text-decoration: none; /* Pour le lien */
+            text-decoration: none;
             display: inline-block;
-        }
-
-        .stats-box {
-            background: #222;
-            border: 1px solid gold;
-            padding: 10px;
-            width: 200px;
-            margin: 20px auto;
-            border-radius: 8px;
         }
 
         footer {
@@ -55,12 +62,21 @@
     
     <h1>POKÉ-BATTLE 2</h1>
 
-    <div class="stats-box">
-        Monnaie : <span id="argent-display">0</span> 🪙
+    <div class="profil-box">
+        <div id="affichage-pseudo">
+            <p>Bienvenue, <strong id="pseudo-nom">Dresseur</strong> !</p>
+            <button onclick="changerPseudo()" style="font-size: 0.7em;">Modifier</button>
+        </div>
+        
+        <div id="formulaire-pseudo" style="display: none;">
+            <input type="text" id="input-pseudo" placeholder="Ton pseudo...">
+            <br>
+            <button class="bouton-menu" onclick="sauvegarderPseudo()">Valider</button>
+        </div>
     </div>
 
     <div>
-        <button class="bouton-jouer" onclick="ajouterArgent()">JOUER (Gagner 10 coins)</button>
+        <button class="bouton-jouer">JOUER</button>
     </div>
 
     <div>
@@ -75,20 +91,33 @@
     </footer>
 
     <script>
-        // --- SYSTÈME DE SAUVEGARDE (JS) ---
+        const zoneAffichage = document.getElementById('affichage-pseudo');
+        const zoneFormulaire = document.getElementById('formulaire-pseudo');
+        const textePseudo = document.getElementById('pseudo-nom');
+        const inputPseudo = document.getElementById('input-pseudo');
 
-        // 1. On récupère l'argent sauvegardé au chargement de la page
-        let monArgent = localStorage.getItem('argentVegechou') || 0;
-        document.getElementById('argent-display').innerText = monArgent;
+        // Au chargement : on vérifie si un pseudo existe déjà
+        let pseudoSauvegarde = localStorage.getItem('pseudoPoke');
 
-        // 2. Fonction pour ajouter de l'argent et sauvegarder
-        function ajouterArgent() {
-            monArgent = parseInt(monArgent) + 10; // On ajoute 10
-            document.getElementById('argent-display').innerText = monArgent; // On affiche
-            
-            // On enregistre dans la mémoire du navigateur
-            localStorage.setItem('argentVegechou', monArgent);
-            alert("Argent sauvegardé ! Même si tu fermes la page, il restera.");
+        if (pseudoSauvegarde) {
+            textePseudo.innerText = pseudoSauvegarde;
+        } else {
+            changerPseudo(); // Si rien, on demande d'en entrer un
+        }
+
+        function sauvegarderPseudo() {
+            let nouveauPseudo = inputPseudo.value;
+            if (nouveauPseudo.length > 0) {
+                localStorage.setItem('pseudoPoke', nouveauPseudo);
+                textePseudo.innerText = nouveauPseudo;
+                zoneAffichage.style.display = "block";
+                zoneFormulaire.style.display = "none";
+            }
+        }
+
+        function changerPseudo() {
+            zoneAffichage.style.display = "none";
+            zoneFormulaire.style.display = "block";
         }
     </script>
 
