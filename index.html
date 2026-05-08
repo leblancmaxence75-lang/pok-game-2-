@@ -14,6 +14,7 @@
         }
         
         h1 { color: #ee1515; font-size: 3em; }
+        .hidden { display: none !important; }
 
         .bouton-jouer { 
             background-color: gold; 
@@ -30,6 +31,18 @@
         
         .bouton-jouer:hover { transform: scale(1.1); }
 
+        .bouton-info {
+            background-color: #2ecc71;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            font-size: 1.1em;
+            margin-top: 10px;
+        }
+
         .bouton-ancien { 
             background-color: #333; 
             color: white; 
@@ -39,6 +52,67 @@
             text-decoration: none; 
             display: inline-block; 
             border: 1px solid #555;
+            margin-top: 20px;
+        }
+
+        /* Styles pour la Boîte PC */
+        #boite-pc {
+            background-image: url('image_2.png'); /* Ton image de fond fournie */
+            background-size: cover;
+            background-position: center;
+            width: 80%;
+            height: 70vh;
+            margin: 30px auto;
+            border: 10px solid #555;
+            border-radius: 20px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+
+        .grid-pc {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 10px;
+            padding: 20px;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .slot-poke {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .slot-poke:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: gold;
+            transform: scale(1.05);
+        }
+
+        .slot-poke img {
+            width: 80%;
+            image-rendering: pixelated; /* Pour garder le côté rétro si besoin */
+        }
+
+        /* Bouton Retour dans le PC */
+        .btn-retour-pc {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ee1515;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
         }
 
         footer { 
@@ -51,19 +125,92 @@
 
 <body>
 
-    <h1>POKÉ-BATTLE 2</h1>
+    <div id="main-menu">
+        <h1>POKÉ-BATTLE 2</h1>
 
-    <div>
-        <button class="bouton-jouer">JOUER</button>
+        <div>
+            <button class="bouton-jouer">JOUER</button>
+        </div>
+
+        <div>
+            <button class="bouton-info" onclick="ouvrirBoitePC()">INFO POKÉMON</button>
+            <br>
+            <a href="https://poke-multi.vercel.app" class="bouton-ancien">RETOUR POKÉ-BATTLE 1</a>
+        </div>
     </div>
 
-    <div>
-        <a href="https://poke-multi.vercel.app" class="bouton-ancien">RETOUR POKÉ-BATTLE 1</a>
+    <div id="boite-pc" class="hidden">
+        <button class="btn-retour-pc" onclick="fermerBoitePC()">X</button>
+        <div class="grid-pc" id="liste-pokemon"></div>
     </div>
 
     <footer>
         Réalisé par Vegechou, By Vegechou
     </footer>
+
+    <script>
+        // Ta liste précise de Pokémon avec leurs IDs officiels pour les images
+        const listePokemon = [
+            { id: 392, name: "Simiabraze" },
+            { id: 887, name: "Lanssorien" },
+            { id: 184, name: "Azumarill" },
+            { id: 724, name: "Archéduc" },
+            { id: 149, name: "Dracolosse" },
+            { id: 181, name: "Pharamp" },
+            { id: 260, name: "Laggron" },
+            { id: 784, name: "Ékaïser" },
+            { id: 286, name: "Chapignon" },
+            { id: 144, name: "Artikodin" },
+            { id: 26, name: "Raichu d'alola", sprite: "26-alola" }, // Sprite spécifique
+            { id: 976, name: "Forgelina" },
+            { id: 494, name: "Victini" },
+            { id: 38, name: "Feunard d'alola", sprite: "38-alola" }, // Sprite spécifique
+            { id: 1000, name: "Gromago" },
+            { id: 383, name: "Groudon" },
+            { id: 34, name: "Nidoking" },
+            { id: 778, name: "Mimiqui" }
+        ];
+
+        function ouvrirBoitePC() {
+            document.getElementById('main-menu').classList.add('hidden');
+            document.getElementById('boite-pc').classList.remove('hidden');
+            
+            const liste = document.getElementById('liste-pokemon');
+            liste.innerHTML = ""; // Vide la grille avant de la remplir
+            
+            // On remplit les 18 slots avec tes Pokémon
+            for (let i = 0; i < 18; i++) {
+                const poke = listePokemon[i];
+                if (poke) {
+                    // Récupération de l'image (on utilise les sprites pixel car ça colle bien au fond PC)
+                    let spriteURL = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${poke.id}.png`;
+                    
+                    // Cas particuliers pour Alola
+                    if(poke.sprite === "26-alola") { spriteURL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10100.png"; }
+                    if(poke.sprite === "38-alola") { spriteURL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10103.png"; }
+
+                    liste.innerHTML += `
+                        <div class="slot-poke" title="${poke.name}" onclick="selectionnerPokemon(${i})">
+                            <img src="${spriteURL}" alt="${poke.name}">
+                        </div>
+                    `;
+                } else {
+                    // Slots vides si on n'a pas 30 Pokémon (pour l'esthétique PC)
+                    liste.innerHTML += `<div class="slot-poke"></div>`;
+                }
+            }
+        }
+
+        function fermerBoitePC() {
+            document.getElementById('boite-pc').classList.add('hidden');
+            document.getElementById('main-menu').classList.remove('hidden');
+        }
+
+        // Fonction vide pour le moment comme demandé
+        function selectionnerPokemon(index) {
+            console.log("Pokémon sélectionné : " + listePokemon[index].name);
+        }
+    </script>
 
 </body>
 </html>
