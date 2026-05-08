@@ -1,272 +1,289 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>POKÉ-BATTLE 2 - FIX FINAL</title>
+    <title>POKÉ-BATTLE 2 - ÉDITION FLUIDE</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
-        body { background-color: #121212; color: white; text-align: center; font-family: sans-serif; margin: 0; padding: 10px; }
+        :root { --bg: #121212; --panel: #222; --accent: gold; --text: #eee; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; }
         .hidden { display: none !important; }
-        .btn { padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; margin: 5px; text-transform: uppercase; }
-        .gold { background: gold; color: black; } .red { background: #ee1515; color: white; } .green { background: #2ecc71; color: white; } .blue { background: #3498db; color: white; }
-        
-        /* Combat UI */
-        #battle-screen { width: 100%; max-width: 800px; margin: 0 auto; background: #222; border: 4px solid #444; border-radius: 15px; padding: 20px; }
-        .arena { display: flex; justify-content: space-between; align-items: flex-end; height: 240px; background: linear-gradient(to bottom, #34495e, #2c3e50); border-radius: 10px; padding: 20px; margin-bottom: 10px; }
-        .poke-battle-box { width: 45%; }
-        .hp-bar-bg { width: 100%; background: #444; height: 12px; border-radius: 10px; border: 2px solid #000; overflow: hidden; margin: 5px 0; }
-        .hp-bar-fill { height: 100%; background: #2ecc71; width: 100%; transition: width 0.5s; }
-        .sprite-battle { width: 120px; image-rendering: pixelated; }
+        .btn { padding: 10px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; border: none; transition: 0.2s; text-transform: uppercase; margin: 5px; }
+        .btn:hover { transform: scale(1.05); filter: brightness(1.2); }
+        .gold { background: gold; color: #000; } .red { background: #e74c3c; color: #fff; } .green { background: #2ecc71; color: #fff; } .blue { background: #3498db; color: #fff; }
+        .btn:disabled { background: #555; cursor: not-allowed; transform: none; }
+
+        /* Battle Scene */
+        #battle-screen { width: 95%; max-width: 700px; background: var(--panel); border: 3px solid #444; border-radius: 12px; padding: 15px; margin-top: 10px; }
+        .arena { display: flex; justify-content: space-between; align-items: flex-end; height: 200px; background: linear-gradient(to bottom, #2c3e50, #000); border-radius: 8px; padding: 15px; position: relative; }
+        .poke-box { width: 40%; text-align: center; }
+        .hp-container { width: 100%; background: #333; height: 10px; border-radius: 5px; border: 1px solid #000; margin: 5px 0; }
+        .hp-bar { height: 100%; background: #2ecc71; width: 100%; transition: width 0.4s ease-out; }
+        .sprite { width: 100px; height: 100px; object-fit: contain; image-rendering: pixelated; }
 
         /* Menus */
-        #battle-menu, .move-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        #battle-log { background: #000; color: #0f0; padding: 10px; height: 50px; overflow-y: auto; font-family: monospace; border-radius: 5px; font-size: 0.85em; margin-bottom: 10px; border: 1px solid #333; }
+        #battle-log { background: #000; color: #2ecc71; padding: 8px; height: 40px; font-size: 0.9em; border-radius: 4px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; }
+        .grid-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
-        /* Team Selection */
-        #team-bar { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; background: #1a1a1a; padding: 15px; border-radius: 15px; border: 2px solid #333; }
-        .team-slot { width: 70px; height: 70px; background: rgba(255,255,255,0.05); border-radius: 10px; border: 2px dashed #444; cursor: pointer; transition: 0.2s; }
-        .team-slot:hover { border-color: red; background: rgba(238,21,21,0.1); }
-        .team-slot img { width: 100%; }
+        /* Selection UI */
+        #team-bar { display: flex; gap: 8px; margin: 15px 0; background: #1a1a1a; padding: 12px; border-radius: 10px; border: 1px solid #333; }
+        .slot { width: 60px; height: 60px; border: 2px dashed #444; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; }
+        .slot:hover { border-color: #e74c3c; }
+        .slot img { width: 90%; }
         
-        #boite-pc { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; overflow-y: auto; }
-        .grid-pc { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; padding: 40px; }
-        .slot-poke { background: #2a2a2a; border-radius: 10px; cursor: pointer; padding: 10px; border: 2px solid transparent; }
-        .slot-poke:hover { border-color: gold; }
-        .slot-poke.selected { opacity: 0.5; cursor: not-allowed; border-color: #555; }
-        
-        .ko { filter: grayscale(1) brightness(0.5); pointer-events: none; }
+        #boite-pc { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; overflow-y: auto; padding: 20px; }
+        .grid-pc { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
+        .pc-item { background: #2a2a2a; padding: 8px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; }
+        .pc-item:hover { border-color: gold; }
+        .pc-item.taken { opacity: 0.3; filter: grayscale(1); pointer-events: none; }
+        .ko { filter: grayscale(1) opacity(0.5); pointer-events: none; }
     </style>
 </head>
 <body>
 
-    <div id="screen-multi">
-        <h1>POKÉ-BATTLE 2</h1>
-        <p id="status" style="color: gold;">Connexion...</p>
-        <button class="btn gold" onclick="creerPartie()">HOST</button>
-        <p id="display-id" style="color: #2ecc71; font-family: monospace; font-size: 1.2em;"></p>
-        <input type="text" id="input-code" placeholder="Code adversaire">
-        <button class="btn green" onclick="rejoindrePartie()">REJOINDRE</button>
+    <div id="ui-connect" style="margin-top: 50px;">
+        <h1>POKÉ-BATTLE <span style="color:gold">2</span></h1>
+        <p id="status">Chargement de PeerJS...</p>
+        <button class="btn gold" onclick="hostGame()">CRÉER UN CODE</button>
+        <div id="host-zone" style="margin: 10px 0; font-weight: bold; color: #2ecc71;"></div>
+        <input type="text" id="join-id" placeholder="Code de l'ami" style="padding: 10px; border-radius: 5px; border: none;">
+        <button class="btn green" onclick="joinGame()">REJOINDRE</button>
     </div>
 
-    <div id="game-zone" class="hidden">
-        <h3>TON ÉQUIPE (Clique sur un Pokémon pour le retirer)</h3>
+    <div id="ui-select" class="hidden">
+        <h2>Compose ton équipe (6)</h2>
         <div id="team-bar">
-            <div class="team-slot" id="slot-0" onclick="retirerDuSlot(0)"></div>
-            <div class="team-slot" id="slot-1" onclick="retirerDuSlot(1)"></div>
-            <div class="team-slot" id="slot-2" onclick="retirerDuSlot(2)"></div>
-            <div class="team-slot" id="slot-3" onclick="retirerDuSlot(3)"></div>
-            <div class="team-slot" id="slot-4" onclick="retirerDuSlot(4)"></div>
-            <div class="team-slot" id="slot-5" onclick="retirerDuSlot(5)"></div>
+            <div class="slot" id="s0" onclick="removePoke(0)"></div><div class="slot" id="s1" onclick="removePoke(1)"></div>
+            <div class="slot" id="s2" onclick="removePoke(2)"></div><div class="slot" id="s3" onclick="removePoke(3)"></div>
+            <div class="slot" id="s4" onclick="removePoke(4)"></div><div class="slot" id="s5" onclick="removePoke(5)"></div>
         </div>
-        <button id="btn-prets" class="btn green hidden" onclick="validerEquipe()">PRÊT POUR LE COMBAT !</button>
-        <button class="btn gold" onclick="ouvrirBoitePC()">OUVRIR LE PC</button>
+        <button class="btn gold" onclick="togglePC(true)">OUVRIR LE PC</button>
+        <button id="btn-ready" class="btn green hidden" onclick="readyUp()">COMBATTRE !</button>
     </div>
 
-    <div id="battle-screen" class="hidden">
-        <div class="arena">
-            <div class="poke-battle-box">
-                <strong id="my-name">---</strong>
-                <div class="hp-bar-bg"><div id="my-hp-bar" class="hp-bar-fill"></div></div>
-                <img id="my-sprite" class="sprite-battle" src="">
+    <div id="ui-battle" class="hidden">
+        <div id="battle-screen">
+            <div id="battle-log">Prêt au combat !</div>
+            <div class="arena">
+                <div class="poke-box">
+                    <strong id="m-name">---</strong>
+                    <div class="hp-container"><div id="m-hp" class="hp-bar"></div></div>
+                    <img id="m-img" class="sprite" src="">
+                </div>
+                <div class="poke-box">
+                    <strong id="o-name">---</strong>
+                    <div class="hp-container"><div id="o-hp" class="hp-bar"></div></div>
+                    <img id="o-img" class="sprite" src="">
+                </div>
             </div>
-            <div class="poke-battle-box">
-                <strong id="opp-name">---</strong>
-                <div class="hp-bar-bg"><div id="opp-hp-bar" class="hp-bar-fill"></div></div>
-                <img id="opp-sprite" class="sprite-battle" src="">
+
+            <div id="main-menu" class="grid-menu">
+                <button class="btn blue" onclick="showAtks()">ATTAQUE</button>
+                <button class="btn green" onclick="showTeam(false)">POKÉMON</button>
             </div>
+
+            <div id="atk-menu" class="hidden grid-menu"></div>
+            <div id="team-menu" class="hidden grid-menu"></div>
         </div>
-        <div id="battle-log">Le combat commence !</div>
-        <div id="battle-menu">
-            <button class="btn blue" onclick="ouvrirMenuAttaque()">ATTAQUE</button>
-            <button class="btn green" onclick="ouvrirMenuSwitch(false)">POKÉMON</button>
-        </div>
-        <div id="moves-menu" class="hidden move-grid"></div>
-        <div id="switch-menu" class="hidden move-grid"></div>
     </div>
 
     <div id="boite-pc" class="hidden">
-        <div class="grid-pc" id="liste-pokemon"></div>
-        <button class="btn red" onclick="fermerBoitePC()">RETOUR</button>
+        <h2 style="text-align: center;">SÉLECTIONNE TES POKÉMON</h2>
+        <div class="grid-pc" id="pc-list"></div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="btn red" onclick="togglePC(false)">FERMER LE PC</button>
+        </div>
     </div>
 
     <script>
-        const dataPokes = [
+        const POKEDEX = [
             { id: 392, name: "Simiabraz", hp: 136, atk: 109, def: 76, vit: 113, moves: [{n:"Lance-Flammes",p:90},{n:"Close Combat",p:120},{n:"Noeud'Herbe",p:80},{n:"Puis. Cachée",p:60}] },
             { id: 887, name: "Lanssorien", hp: 148, atk: 125, def: 80, vit: 147, moves: [{n:"Demi-Tour",p:70},{n:"Lance-Flammes",p:90},{n:"Draco Météor",p:130},{n:"Ball'Ombre",p:80}] },
             { id: 184, name: "Azumarill", hp: 160, atk: 110, def: 85, vit: 55, moves: [{n:"Câlinerie",p:90},{n:"Aqua-Brèche",p:85},{n:"Cryo-Pirouette",p:80},{n:"Cascade",p:80}] },
             { id: 149, name: "Dracolosse", hp: 151, atk: 139, def: 100, vit: 85, moves: [{n:"Vitesse Extrême",p:80},{n:"Vent Violent",p:110},{n:"Danse Draco",p:0},{n:"Draco-Griffe",p:80}] },
             { id: 383, name: "Groudon", hp: 160, atk: 155, def: 145, vit: 95, moves: [{n:"Lame Pangéenne",p:120},{n:"Lame de Roc",p:100},{n:"Poing de Feu",p:75},{n:"Séisme",p:100}] },
-            { id: 1000, name: "Gromago", hp: 147, atk: 65, def: 100, vit: 89, moves: [{n:"Ruée d'Or",p:120},{n:"Ball'Ombre",p:80},{n:"Tonnerre",p:90},{n:"Soin",p:0}] },
+            { id: 1000, name: "Gromago", hp: 147, atk: 65, def: 100, vit: 89, moves: [{n:"Ruée d'Or",p:120},{n:"Ball'Ombre",p:80},{n:"Tonnerre",p:90},{n:"Machination",p:0}] },
             { id: 260, name: "Laggron", hp: 160, atk: 115, def: 95, vit: 65, moves: [{n:"Séisme",p:100},{n:"Eau Revoir",p:70},{n:"Laser Glace",p:90},{n:"Cascade",p:80}] },
-            { id: 724, name: "Archéduc", hp: 138, atk: 112, def: 80, vit: 75, moves: [{n:"Tisse Ombre",p:80},{n:"Rapace",p:120},{n:"Lame Feuille",p:90},{n:"Coup Bas",p:70}] },
             { id: 34, name: "Nidoking", hp: 141, atk: 107, def: 82, vit: 90, moves: [{n:"Telluriforce",p:90},{n:"Laser Glace",p:90},{n:"Cradovague",p:95},{n:"Lance-Flammes",p:90}] },
+            { id: 10103, name: "Feunard A", hp: 133, atk: 72, def: 80, vit: 114, moves: [{n:"Pouvoir Lunaire",p:95},{n:"Lyophilisation",p:70},{n:"Vent Glacé",p:55},{n:"Voile Aurore",p:0}] },
+            { id: 494, name: "Victini", hp: 160, atk: 105, def: 105, vit: 105, moves: [{n:"Coup Victoire",p:180},{n:"Psyko",p:90},{n:"Balle Énergie",p:90},{n:"Demi-Tour",p:70}] },
             { id: 778, name: "Mimiqui", hp: 115, atk: 95, def: 85, vit: 101, moves: [{n:"Câlinerie",p:90},{n:"Griffe Ombre",p:70},{n:"Ombre Portée",p:40},{n:"Danse Lames",p:0}] },
-            { id: 10103, name: "Feunard d'Alola", hp: 133, atk: 72, def: 80, vit: 114, moves: [{n:"Pouvoir Lunaire",p:95},{n:"Lyophilisation",p:70},{n:"Vent Glacé",p:55},{n:"Voile Aurore",p:0}] },
-            { id: 494, name: "Victini", hp: 160, atk: 105, def: 105, vit: 105, moves: [{n:"Coup Victoire",p:180},{n:"Psyko",p:90},{n:"Balle Énergie",p:90},{n:"Demi-Tour",p:70}] }
+            { id: 724, name: "Archéduc", hp: 138, atk: 112, def: 80, vit: 75, moves: [{n:"Tisse Ombre",p:80},{n:"Rapace",p:120},{n:"Lame Feuille",p:90},{n:"Coup Bas",p:70}] }
         ];
 
         let peer = new Peer();
         let conn;
-        let monEquipe = [];
-        let equipeAdv = [];
-        let indexMoi = 0;
-        let indexAdv = 0;
-        let monChoix = null;
-        let choixAdv = null;
-        let forceSwitch = false;
+        let teamMoi = [];
+        let teamAdv = [];
+        let activeMoi = 0;
+        let activeAdv = 0;
+        let monAction = null;
+        let advAction = null;
+        let isForcedSwitch = false;
 
-        peer.on('open', id => document.getElementById('status').innerText = "Serveur Prêt !");
-        peer.on('connection', c => { conn = c; setupConn(); });
+        // --- RESEAU ---
+        peer.on('open', id => document.getElementById('status').innerText = "Prêt. Ton ID : " + id);
+        peer.on('connection', c => { conn = c; initComm(); });
+        function hostGame() { document.getElementById('host-zone').innerText = peer.id; }
+        function joinGame() { conn = peer.connect(document.getElementById('join-id').value); initComm(); }
 
-        function creerPartie() { document.getElementById('display-id').innerText = peer.id; }
-        function rejoindrePartie() { conn = peer.connect(document.getElementById('input-code').value); setupConn(); }
-
-        function setupConn() {
-            document.getElementById('screen-multi').classList.add('hidden');
-            document.getElementById('game-zone').classList.remove('hidden');
+        function initComm() {
+            document.getElementById('ui-connect').classList.add('hidden');
+            document.getElementById('ui-select').classList.remove('hidden');
             conn.on('data', data => {
-                if(data.type === "team") { equipeAdv = data.team; verifierPrets(); }
-                if(data.type === "start") { demarrerCombat(); }
-                if(data.type === "action") { choixAdv = data.choix; verifierTour(); }
+                if(data.type === 'team') { teamAdv = data.val; checkReady(); }
+                if(data.type === 'start') { runBattle(); }
+                if(data.type === 'act') { advAction = data.val; solveTour(); }
+                if(data.type === 'f-switch') { activeAdv = data.val; logAdvSwitch(); }
             });
         }
 
-        function ouvrirBoitePC() {
-            const list = document.getElementById('liste-pokemon');
-            list.innerHTML = "";
-            dataPokes.forEach((p, i) => {
-                const dejaPris = monEquipe.some(me => me.id === p.id);
-                list.innerHTML += `<div class="slot-poke ${dejaPris ? 'selected' : ''}" onclick="ajouter(${i})">
-                    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p.id}.png"><br>${p.name}
-                </div>`;
-            });
-            document.getElementById('boite-pc').classList.remove('hidden');
+        // --- SELECTION ---
+        function togglePC(show) {
+            document.getElementById('boite-pc').classList.toggle('hidden', !show);
+            if(show) {
+                const pc = document.getElementById('pc-list'); pc.innerHTML = "";
+                POKEDEX.forEach((p, i) => {
+                    const taken = teamMoi.some(x => x.id === p.id);
+                    pc.innerHTML += `<div class="pc-item ${taken?'taken':''}" onclick="addPoke(${i})">
+                        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p.id}.png"><br>${p.name}
+                    </div>`;
+                });
+            }
         }
 
-        function ajouter(i) {
-            if (monEquipe.length < 6 && !monEquipe.some(p => p.id === dataPokes[i].id)) {
-                let p = JSON.parse(JSON.stringify(dataPokes[i]));
+        function addPoke(i) {
+            if(teamMoi.length < 6) {
+                let p = JSON.parse(JSON.stringify(POKEDEX[i]));
                 p.hpMax = p.hp * 4; p.hpCur = p.hpMax;
-                monEquipe.push(p);
-                MAJTeamUI();
-                ouvrirBoitePC(); // Refresh pour griser
+                teamMoi.push(p);
+                updateTeamUI();
+                togglePC(true);
             }
         }
 
-        function retirerDuSlot(idx) {
-            if (monEquipe[idx]) {
-                monEquipe.splice(idx, 1);
-                MAJTeamUI();
-            }
+        function removePoke(i) {
+            teamMoi.splice(i, 1);
+            updateTeamUI();
         }
 
-        function MAJTeamUI() {
+        function updateTeamUI() {
             for(let i=0; i<6; i++) {
-                const slot = document.getElementById('slot-'+i);
-                slot.innerHTML = monEquipe[i] ? `<img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${monEquipe[i].id}.png">` : "";
+                const s = document.getElementById('s'+i);
+                s.innerHTML = teamMoi[i] ? `<img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${teamMoi[i].id}.png">` : "";
             }
-            document.getElementById('btn-prets').classList.toggle('hidden', monEquipe.length < 6);
+            document.getElementById('btn-ready').classList.toggle('hidden', teamMoi.length < 6);
         }
 
-        function validerEquipe() {
-            conn.send({type: "team", team: monEquipe});
-            document.getElementById('game-zone').innerHTML = "<h1>Équipe validée ! En attente de l'adversaire...</h1>";
-            verifierPrets();
+        function readyUp() {
+            conn.send({type: 'team', val: teamMoi});
+            document.getElementById('ui-select').innerHTML = "<h1>Équipe prête ! Attente de l'adversaire...</h1>";
+            checkReady();
         }
 
-        function verifierPrets() {
-            if(monEquipe.length === 6 && equipeAdv.length === 6) {
-                conn.send({type: "start"});
-                demarrerCombat();
+        function checkReady() {
+            if(teamMoi.length === 6 && teamAdv.length === 6) {
+                conn.send({type: 'start'});
+                runBattle();
             }
         }
 
-        function demarrerCombat() {
-            document.getElementById('game-zone').classList.add('hidden');
-            document.getElementById('battle-screen').classList.remove('hidden');
-            MAJBattleUI();
+        // --- COMBAT ---
+        function runBattle() {
+            document.getElementById('ui-select').classList.add('hidden');
+            document.getElementById('ui-battle').classList.remove('hidden');
+            renderUI();
         }
 
-        function MAJBattleUI() {
-            const m = monEquipe[indexMoi]; const o = equipeAdv[indexAdv];
-            document.getElementById('my-name').innerText = m.name;
-            document.getElementById('my-sprite').src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/${m.id}.png`;
-            document.getElementById('my-hp-bar').style.width = (m.hpCur/m.hpMax*100) + "%";
-            document.getElementById('opp-name').innerText = o.name;
-            document.getElementById('opp-sprite').src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${o.id}.png`;
-            document.getElementById('opp-hp-bar').style.width = (o.hpCur/o.hpMax*100) + "%";
+        function renderUI() {
+            const m = teamMoi[activeMoi]; const o = teamAdv[activeAdv];
+            document.getElementById('m-name').innerText = m.name;
+            document.getElementById('m-img').src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/${m.id}.png`;
+            document.getElementById('m-hp').style.width = (m.hpCur/m.hpMax*100) + "%";
             
-            document.getElementById('battle-menu').classList.toggle('hidden', forceSwitch);
-            document.getElementById('moves-menu').classList.add('hidden');
-            document.getElementById('switch-menu').classList.add('hidden');
+            document.getElementById('o-name').innerText = o.name;
+            document.getElementById('o-img').src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${o.id}.png`;
+            document.getElementById('o-hp').style.width = (o.hpCur/o.hpMax*100) + "%";
+
+            document.getElementById('main-menu').classList.toggle('hidden', isForcedSwitch);
+            document.getElementById('atk-menu').classList.add('hidden');
+            document.getElementById('team-menu').classList.add('hidden');
 
             if(m.hpCur <= 0) {
-                forceSwitch = true;
-                document.getElementById('battle-log').innerText = m.name + " est KO ! Switch obligatoire.";
-                ouvrirMenuSwitch(true);
+                isForcedSwitch = true;
+                document.getElementById('battle-log').innerText = m.name + " est KO ! Changez !";
+                showTeam(true);
             }
         }
 
-        function ouvrirMenuAttaque() {
-            const m = document.getElementById('moves-menu'); m.innerHTML = "";
-            monEquipe[indexMoi].moves.forEach((atk, i) => {
-                m.innerHTML += `<button class="btn gold" onclick="action('atk', ${i})">${atk.n}</button>`;
+        function showAtks() {
+            const menu = document.getElementById('atk-menu'); menu.innerHTML = "";
+            teamMoi[activeMoi].moves.forEach((atk, i) => {
+                menu.innerHTML += `<button class="btn gold" onclick="submitAct('atk', ${i})">${atk.n}</button>`;
             });
-            document.getElementById('battle-menu').classList.add('hidden'); m.classList.remove('hidden');
+            document.getElementById('main-menu').classList.add('hidden'); menu.classList.remove('hidden');
         }
 
-        function ouvrirMenuSwitch(forced) {
-            forceSwitch = forced;
-            const s = document.getElementById('switch-menu'); s.innerHTML = "";
-            monEquipe.forEach((p, i) => {
-                if(i !== indexMoi) {
-                    let ko = p.hpCur <= 0 ? "ko" : "";
-                    s.innerHTML += `<button class="btn green ${ko}" onclick="action('switch', ${i})">${p.name}</button>`;
+        function showTeam(forced) {
+            isForcedSwitch = forced;
+            const menu = document.getElementById('team-menu'); menu.innerHTML = "";
+            teamMoi.forEach((p, i) => {
+                if(i !== activeMoi) {
+                    const disabled = p.hpCur <= 0 ? 'ko' : '';
+                    menu.innerHTML += `<button class="btn green ${disabled}" onclick="submitAct('switch', ${i})">${p.name}</button>`;
                 }
             });
-            document.getElementById('battle-menu').classList.add('hidden'); s.classList.remove('hidden');
+            document.getElementById('main-menu').classList.add('hidden'); menu.classList.remove('hidden');
         }
 
-        function action(type, i) {
-            if(forceSwitch && type === 'switch') {
-                indexMoi = i; forceSwitch = false;
-                document.getElementById('battle-log').innerText = "Allez " + monEquipe[i].name + " !";
-                MAJBattleUI(); return;
+        function submitAct(type, i) {
+            if(isForcedSwitch) {
+                activeMoi = i; isForcedSwitch = false;
+                conn.send({type: 'f-switch', val: i});
+                document.getElementById('battle-log').innerText = "Go " + teamMoi[i].name + " !";
+                renderUI();
+                return;
             }
-            monChoix = {type, i};
-            conn.send({type: "action", choix: monChoix});
-            document.getElementById('battle-log').innerText = "Attente de l'adversaire...";
-            document.getElementById('moves-menu').classList.add('hidden');
-            document.getElementById('switch-menu').classList.add('hidden');
-            verifierTour();
+            monAction = {type, i};
+            conn.send({type: 'act', val: monAction});
+            document.getElementById('battle-log').innerText = "Attente...";
+            document.getElementById('atk-menu').classList.add('hidden');
+            document.getElementById('team-menu').classList.add('hidden');
+            solveTour();
         }
 
-        function verifierTour() {
-            if(monChoix && choixAdv) {
-                let m = monEquipe[indexMoi]; let o = equipeAdv[indexAdv];
-                if(monChoix.type === "switch") { indexMoi = monChoix.i; m = monEquipe[indexMoi]; }
-                if(choixAdv.type === "switch") { indexAdv = choixAdv.i; o = equipeAdv[indexAdv]; }
+        function solveTour() {
+            if(!monAction || !advAction) return;
+            let m = teamMoi[activeMoi]; let o = teamAdv[activeAdv];
 
-                if(m.vit >= o.vit) {
-                    if(monChoix.type === "atk") frapper(m, o, monChoix.i);
-                    if(o.hpCur > 0 && choixAdv.type === "atk") frapper(o, m, choixAdv.i);
-                } else {
-                    if(choixAdv.type === "atk") frapper(o, m, choixAdv.i);
-                    if(m.hpCur > 0 && monChoix.type === "atk") frapper(m, o, monChoix.i);
-                }
-                monChoix = null; choixAdv = null;
-                MAJBattleUI();
+            // Priorité Switch
+            if(monAction.type === 'switch') { activeMoi = monAction.i; m = teamMoi[activeMoi]; }
+            if(advAction.type === 'switch') { activeAdv = advAction.i; o = teamAdv[activeAdv]; }
+
+            // Attaques par Vitesse
+            if(m.vit >= o.vit) {
+                if(monAction.type === 'atk') hit(m, o, monAction.i);
+                if(o.hpCur > 0 && advAction.type === 'atk') hit(o, m, advAction.i);
+            } else {
+                if(advAction.type === 'atk') hit(o, m, advAction.i);
+                if(m.hpCur > 0 && monAction.type === 'atk') hit(m, o, monAction.i);
             }
+
+            monAction = null; advAction = null;
+            renderUI();
         }
 
-        function frapper(atq, def, idx) {
+        function hit(atq, def, idx) {
             const move = atq.moves[idx];
-            if(move.p > 0) def.hpCur -= (atq.atk / def.def) * move.p * 0.8;
+            if(move.p > 0) def.hpCur -= Math.ceil((atq.atk / def.def) * move.p * 0.7);
             if(def.hpCur < 0) def.hpCur = 0;
-            document.getElementById('battle-log').innerText = atq.name + " utilise " + move.n;
+            document.getElementById('battle-log').innerText = atq.name + " lance " + move.n;
         }
 
-        function fermerBoitePC() { document.getElementById('boite-pc').classList.add('hidden'); }
+        function logAdvSwitch() {
+            document.getElementById('battle-log').innerText = "L'adversaire envoie " + teamAdv[activeAdv].name;
+            renderUI();
+        }
     </script>
 </body>
 </html>
