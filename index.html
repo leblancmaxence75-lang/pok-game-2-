@@ -2,188 +2,92 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>POKÉ-BATTLE 2</title>
+    <title>POKÉ-BATTLE 2 - MULTI & TEAM</title>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
-        body { 
-            background-color: #121212; 
-            color: white; 
-            text-align: center; 
-            font-family: sans-serif; 
-            margin: 0; 
-            padding: 50px; 
-        }
-        
-        h1 { color: #ee1515; font-size: 3em; }
+        body { background-color: #121212; color: white; text-align: center; font-family: sans-serif; margin: 0; padding: 20px; }
+        h1 { color: #ee1515; font-size: 3em; text-shadow: 0 0 10px rgba(238,21,21,0.5); }
         .hidden { display: none !important; }
 
-        .bouton-jouer { 
-            background-color: gold; 
-            color: black; 
-            padding: 20px 50px; 
-            border-radius: 15px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            border: none; 
-            font-size: 1.5em; 
-            margin-bottom: 20px;
-            transition: 0.3s;
-        }
-        .bouton-jouer:hover { transform: scale(1.1); }
+        /* Connexion */
+        #menu-multi { background: #1e1e1e; padding: 30px; border-radius: 20px; width: 450px; margin: 50px auto; border: 2px solid #444; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        input { padding: 12px; border-radius: 8px; border: 1px solid #444; width: 80%; margin: 10px 0; background: #000; color: gold; text-align: center; font-size: 1.1em; }
+        
+        .btn { padding: 15px 30px; border-radius: 10px; font-weight: bold; cursor: pointer; border: none; transition: 0.3s; margin: 5px; text-transform: uppercase; }
+        .gold { background: gold; color: black; }
+        .red { background: #ee1515; color: white; }
+        .green { background: #2ecc71; color: white; }
+        .btn:hover { transform: scale(1.05); filter: brightness(1.2); }
 
-        .bouton-info {
-            background-color: #2ecc71;
-            color: white;
-            padding: 15px 30px;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            border: none;
-            font-size: 1.1em;
-            margin-top: 10px;
-        }
+        /* Barre d'équipe */
+        #team-bar { background: rgba(0,0,0,0.8); padding: 15px; margin-bottom: 20px; border-radius: 15px; display: flex; justify-content: center; gap: 10px; min-height: 80px; border: 2px solid gold; }
+        .team-slot { width: 70px; height: 70px; background: rgba(255,255,255,0.1); border-radius: 10px; position: relative; border: 1px dashed #555; }
+        .team-slot img { width: 100%; image-rendering: pixelated; }
+        .remove-poke { position: absolute; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; cursor: pointer; border: none; }
 
-        .bouton-ancien { 
-            background-color: #333; 
-            color: white; 
-            padding: 10px 20px; 
-            border-radius: 10px; 
-            cursor: pointer; 
-            text-decoration: none; 
-            display: inline-block; 
-            border: 1px solid #555;
-            margin-top: 20px;
-        }
+        /* Boite PC */
+        #boite-pc { background-image: url('image_2.png'); background-size: cover; background-position: center; width: 900px; height: 550px; margin: 20px auto; border: 10px solid #555; border-radius: 20px; position: relative; }
+        .grid-pc { display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(3, 1fr); gap: 15px; padding: 40px; box-sizing: border-box; height: 100%; }
+        .slot-poke { background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .slot-poke:hover { background: rgba(255, 255, 255, 0.3); border-color: gold; }
+        .slot-poke img { width: 85px; image-rendering: pixelated; }
 
-        #boite-pc {
-            background-image: url('image_2.png'); 
-            background-size: cover;
-            background-position: center;
-            width: 900px;
-            height: 550px;
-            margin: 30px auto;
-            border: 10px solid #555;
-            border-radius: 20px;
-            position: relative;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-        }
-
-        .grid-pc {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            gap: 15px;
-            padding: 40px;
-            height: 100%;
-            box-sizing: border-box;
-        }
-
-        .slot-poke {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .slot-poke:hover { background: rgba(255, 255, 255, 0.3); border-color: gold; transform: scale(1.05); }
-        .slot-poke img { width: 90px; image-rendering: pixelated; }
-
-        .btn-retour-pc {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #ee1515;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            z-index: 10;
-        }
-
-        /* POPUP DETAILS */
-        #pop-up-details {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: #2c2c34;
-            border: 3px solid #ee1515;
-            width: 380px;
-            border-radius: 15px;
-            z-index: 200;
-            color: white;
-            padding-bottom: 20px;
-            box-shadow: 0 0 40px rgba(0,0,0,0.7);
-        }
-
+        /* Popup */
+        #pop-up-details { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #2c2c34; border: 3px solid #ee1515; width: 400px; border-radius: 15px; z-index: 200; box-shadow: 0 0 50px rgba(0,0,0,0.8); padding-bottom: 20px; }
         .tabs { display: flex; background: #1a1a1a; border-radius: 12px 12px 0 0; }
-        .tab-btn { padding: 12px; border: none; background: none; color: #888; cursor: pointer; font-weight: bold; width: 33%; }
+        .tab-btn { padding: 15px; border: none; background: none; color: #888; cursor: pointer; font-weight: bold; flex: 1; }
         .tab-btn.active { color: white; border-bottom: 3px solid gold; }
-
         .content-area { padding: 20px; text-align: left; }
-        .stat-row { display: flex; align-items: center; margin-bottom: 10px; font-family: monospace; }
-        .stat-label { width: 90px; font-size: 0.95em; }
-        .stat-bar-bg { flex-grow: 1; background: #444; height: 14px; border-radius: 7px; overflow: hidden; margin-left: 10px; border: 1px solid #111; }
-        .stat-bar-fill { background: #50c878; height: 100%; transition: width 0.6s ease-out; }
         
-        .total-txt { color: gold; font-weight: bold; margin-top: 15px; text-align: right; border-top: 1px solid #444; padding-top: 5px; }
+        .stat-row { display: flex; align-items: center; margin-bottom: 8px; font-family: monospace; }
+        .stat-label { width: 100px; }
+        .stat-bar-bg { flex: 1; background: #444; height: 12px; border-radius: 6px; margin-left: 10px; overflow: hidden; }
+        .stat-bar-fill { background: #50c878; height: 100%; }
 
-        .move-row {
-            background: #1a1a1a;
-            margin-bottom: 5px;
-            padding: 8px;
-            border-radius: 5px;
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.85em;
-            border-left: 4px solid #555;
-        }
-        .move-name { font-weight: bold; color: #fff; }
-        .move-stats { color: #aaa; text-align: right; }
-        
-        /* Couleurs des bordures par type */
-        .type-fire { border-color: #ff4422; }
-        .type-fighting { border-color: #bb5544; }
-        .type-grass { border-color: #77cc55; }
-        .type-dragon { border-color: #7766ee; }
-        .type-ghost { border-color: #7777bb; }
-        .type-bug { border-color: #aabb22; }
-        .type-water { border-color: #3399ff; }
-        .type-fairy { border-color: #ee99ee; }
-        .type-ice { border-color: #66ccff; }
-        .type-normal { border-color: #aaaa99; }
-        .type-flying { border-color: #8899ff; }
-        .type-electric { border-color: #ffcc33; }
-        .type-ground { border-color: #e2bf65; }
-        .type-rock { border-color: #b6a136; }
-        .type-psychic { border-color: #f85888; }
-        .type-steel { border-color: #b8b8d0; }
-        .type-poison { border-color: #a040a0; }
-        .type-dark { border-color: #705848; }
+        .move-row { background: #1a1a1a; margin-bottom: 6px; padding: 10px; border-radius: 6px; border-left: 5px solid #555; display: flex; justify-content: space-between; align-items: center; }
+        .move-name { font-weight: bold; }
+        .move-info { font-size: 0.8em; color: #aaa; }
 
-        footer { color: #555; margin-top: 50px; font-size: 0.8em; }
+        /* Couleurs Types */
+        .type-fire { border-color: #ff4422; } .type-water { border-color: #3399ff; } .type-grass { border-color: #77cc55; }
+        .type-electric { border-color: #ffcc33; } .type-ice { border-color: #66ccff; } .type-fighting { border-color: #bb5544; }
+        .type-poison { border-color: #a040a0; } .type-ground { border-color: #e2bf65; } .type-flying { border-color: #8899ff; }
+        .type-psychic { border-color: #f85888; } .type-bug { border-color: #aabb22; } .type-rock { border-color: #b6a136; }
+        .type-ghost { border-color: #7777bb; } .type-dragon { border-color: #7766ee; } .type-dark { border-color: #705848; }
+        .type-steel { border-color: #b8b8d0; } .type-fairy { border-color: #ee99ee; } .type-normal { border-color: #aaaa99; }
     </style>
 </head>
-
 <body>
 
-    <div id="main-menu">
+    <div id="screen-multi">
         <h1>POKÉ-BATTLE 2</h1>
-        <div><button class="bouton-jouer">JOUER</button></div>
-        <div>
-            <button class="bouton-info" onclick="ouvrirBoitePC()">INFO POKÉMON</button><br>
-            <a href="https://poke-multi.vercel.app" class="bouton-ancien">RETOUR POKÉ-BATTLE 1</a>
+        <div id="status" style="color: gold; margin-bottom: 20px;">Initialisation du réseau...</div>
+        <div id="menu-multi">
+            <button class="btn gold" onclick="creerPartie()">HOST (CRÉER)</button>
+            <p id="display-id" style="font-family: monospace; font-size: 1.5em; color: #2ecc71; margin: 10px;"></p>
+            <hr style="border: 0; border-top: 1px solid #444; margin: 20px;">
+            <input type="text" id="input-code" placeholder="CODE DU HOST">
+            <button class="btn green" onclick="rejoindrePartie()">REJOINDRE</button>
         </div>
     </div>
 
-    <div id="boite-pc" class="hidden">
-        <button class="btn-retour-pc" onclick="fermerBoitePC()">X</button>
-        <div class="grid-pc" id="liste-pokemon"></div>
+    <div id="game-zone" class="hidden">
+        <div id="team-bar">
+            <div class="team-slot" id="slot-0"></div>
+            <div class="team-slot" id="slot-1"></div>
+            <div class="team-slot" id="slot-2"></div>
+            <div class="team-slot" id="slot-3"></div>
+            <div class="team-slot" id="slot-4"></div>
+            <div class="team-slot" id="slot-5"></div>
+            <button id="btn-prets" class="btn green hidden" style="margin-left: 20px;" onclick="validerEquipe()">PRÊT !</button>
+        </div>
+
+        <button class="btn gold" onclick="ouvrirBoitePC()">OUVRIR LE PC</button>
+        
+        <div id="boite-pc" class="hidden">
+            <button class="btn red" style="position:absolute; top:10px; right:10px; padding: 5px 15px;" onclick="fermerBoitePC()">X</button>
+            <div class="grid-pc" id="liste-pokemon"></div>
+        </div>
     </div>
 
     <div id="pop-up-details">
@@ -191,242 +95,144 @@
             <button class="tab-btn active" onclick="switchTab('stats')">STATS</button>
             <button class="tab-btn" onclick="switchTab('talent')">TALENT</button>
             <button class="tab-btn" onclick="switchTab('moves')">CAPAS</button>
-            <button style="color:white; background:red; border:none; cursor:pointer; flex-grow:1; border-radius:0 12px 0 0;" onclick="fermerPopup()">X</button>
         </div>
-        
         <div id="view-stats" class="content-area">
-            <h3 id="pop-name" style="text-align:center; margin-top:0; color:gold;">NOM</h3>
+            <h3 id="pop-name" style="text-align:center; color:gold; margin-top:0;"></h3>
             <div id="stats-container"></div>
-            <div class="total-txt" id="stat-total">Total: 0</div>
         </div>
-
         <div id="view-talent" class="content-area hidden">
-            <h3 id="talent-name" style="color:gold;">Talent</h3>
-            <p id="talent-desc" style="font-size:1em; line-height:1.5; background: #1a1a1a; padding: 10px; border-radius: 8px;"></p>
+            <h3 id="talent-name" style="color:gold;"></h3>
+            <p id="talent-desc" style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px;"></p>
         </div>
-
         <div id="view-moves" class="content-area hidden">
-            <h3 style="color:gold; margin-top:0;">ATTAQUES</h3>
             <div id="moves-container"></div>
+        </div>
+        <div style="display:flex; justify-content: space-around; padding: 10px; border-top: 1px solid #444;">
+            <button class="btn red" onclick="fermerPopup()">RETOUR</button>
+            <button class="btn green" id="btn-ajouter">AJOUTER</button>
         </div>
     </div>
 
-    <footer>Réalisé par Vegechou, By Vegechou</footer>
-
     <script>
+        // --- DONNÉES COMPLÈTES (Toutes les attaques incluses) ---
         const listePokemon = [
-            { id: 392, name: "Simiabraz", type: "Feu / Combat", hp: 136, atk: 109, def: 76, atqSp: 109, defSp: 76, vit: 113, talent: "Brasier", desc: "Augmente la puissance des capacités Feu quand les PV sont bas.", 
-              moves: [
-                { n: "Lance-Flammes", t: "fire", cat: "Spe", pwr: 90, acc: 100 },
-                { n: "Close Combat", t: "fighting", cat: "Phy", pwr: 120, acc: 100 },
-                { n: "Noeud'Herbe", t: "grass", cat: "Spe", pwr: 80, acc: 100 },
-                { n: "Puis. Cachée", t: "normal", cat: "Spe", pwr: 60, acc: 100 }
-              ] 
-            },
-            { id: 887, name: "Lanssorien", type: "Dragon / Spectre", hp: 148, atk: 125, def: 80, atqSp: 105, defSp: 80, vit: 147, talent: "Corps Sain", desc: "Empêche les stats de baisser à cause de l'adversaire.", 
-              moves: [
-                { n: "Demi-Tour", t: "bug", cat: "Phy", pwr: 70, acc: 100 },
-                { n: "Lance-Flammes", t: "fire", cat: "Spe", pwr: 90, acc: 100 },
-                { n: "Draco Météor", t: "dragon", cat: "Spe", pwr: 130, acc: 90 },
-                { n: "Ball'Ombre", t: "ghost", cat: "Spe", pwr: 80, acc: 100 }
-              ] 
-            },
-            { id: 184, name: "Azumarill", type: "Eau / Fée", hp: 160, atk: 55, def: 85, atqSp: 65, defSp: 85, vit: 55, talent: "Coloforce", desc: "Double l'Attaque du Pokémon au combat.", 
-              moves: [
-                { n: "Cognobidon", t: "normal", cat: "Stat", pwr: 0, acc: 100 },
-                { n: "Câlinerie", t: "fairy", cat: "Phy", pwr: 90, acc: 90 },
-                { n: "Cryo-Pirouette", t: "ice", cat: "Phy", pwr: 80, acc: 100 },
-                { n: "Aqua-Brèche", t: "water", cat: "Phy", pwr: 85, acc: 100 }
-              ] 
-            },
-            { id: 724, name: "Archéduc", type: "Plante / Spectre", hp: 138, atk: 112, def: 80, atqSp: 105, defSp: 105, vit: 75, talent: "Engrais", desc: "Augmente la puissance des capacités Plante quand les PV sont bas.",
-              moves: [
-                { n: "Tisse Ombre", t: "ghost", cat: "Phy", pwr: 80, acc: 100 },
-                { n: "Rapace", t: "flying", cat: "Phy", pwr: 120, acc: 100 },
-                { n: "Lame Feuille", t: "grass", cat: "Phy", pwr: 90, acc: 100 },
-                { n: "Coup Bas", t: "dark", cat: "Phy", pwr: 70, acc: 100 }
-              ]
-            },
-            { id: 149, name: "Dracolosse", type: "Dragon / Vol", hp: 151, atk: 139, def: 100, atqSp: 105, defSp: 105, vit: 85, talent: "Attention", desc: "Empêche le Pokémon d'avoir peur.",
-              moves: [
-                { n: "Vitesse Extrême", t: "normal", cat: "Phy", pwr: 80, acc: 100 },
-                { n: "Vent Violent", t: "flying", cat: "Spe", pwr: 110, acc: 70 },
-                { n: "Danse Draco", t: "dragon", cat: "Stat", pwr: 0, acc: 100 },
-                { n: "Draco-Griffe", t: "dragon", cat: "Phy", pwr: 80, acc: 100 }
-              ]
-            },
-            { id: 181, name: "Pharamp", type: "Électrik", hp: 150, atk: 80, def: 90, atqSp: 120, defSp: 95, vit: 60, talent: "Statik", desc: "Peut paralyser l'adversaire s'il y a un contact physique.",
-              moves: [
-                { n: "Tonnerre", t: "electric", cat: "Spe", pwr: 90, acc: 100 },
-                { n: "Change-Éclair", t: "electric", cat: "Spe", pwr: 70, acc: 100 },
-                { n: "Puis. Cachée", t: "normal", cat: "Spe", pwr: 60, acc: 100 },
-                { n: "Exploforce", t: "fighting", cat: "Spe", pwr: 120, acc: 70 }
-              ]
-            },
-            { id: 260, name: "Laggron", type: "Eau / Sol", hp: 160, atk: 115, def: 95, atqSp: 90, defSp: 95, vit: 65, talent: "Torrent", desc: "Augmente la puissance des capacités Eau quand les PV sont bas.",
-              moves: [
-                { n: "Séisme", t: "ground", cat: "Phy", pwr: 100, acc: 100 },
-                { n: "Eau Revoir", t: "water", cat: "Phy", pwr: 70, acc: 100 },
-                { n: "Laser Glace", t: "ice", cat: "Spe", pwr: 90, acc: 100 },
-                { n: "Cascade", t: "water", cat: "Phy", pwr: 80, acc: 100 }
-              ]
-            },
-            { id: 784, name: "Ékaïser", type: "Dragon / Combat", hp: 135, atk: 115, def: 130, atqSp: 105, defSp: 110, vit: 90, talent: "Anti-Bruit", desc: "Protège contre les attaques sonores adverses.",
-              moves: [
-                { n: "Danse Draco", t: "dragon", cat: "Stat", pwr: 0, acc: 100 },
-                { n: "Vampi-Poing", t: "fighting", cat: "Phy", pwr: 75, acc: 100 },
-                { n: "Close Combat", t: "fighting", cat: "Phy", pwr: 120, acc: 100 },
-                { n: "Vibracaille", t: "dragon", cat: "Spe", pwr: 110, acc: 100 }
-              ]
-            },
-            { id: 286, name: "Chapignon", type: "Plante / Combat", hp: 120, atk: 135, def: 85, atqSp: 65, defSp: 65, vit: 75, talent: "Technicien", desc: "Renforce les capacités de faible puissance.",
-              moves: [
-                { n: "Spore", t: "grass", cat: "Stat", pwr: 0, acc: 100 },
-                { n: "Canon Graine", t: "grass", cat: "Phy", pwr: 80, acc: 100 },
-                { n: "Mitra-Poing", t: "fighting", cat: "Phy", pwr: 150, acc: 100 },
-                { n: "Lame de Roc", t: "rock", cat: "Phy", pwr: 100, acc: 80 }
-              ]
-            },
-            { id: 144, name: "Artikodin", type: "Glace / Vol", hp: 150, atk: 90, def: 105, atqSp: 100, defSp: 130, vit: 90, talent: "Pression", desc: "Force l'adversaire à utiliser plus de PP.",
-              moves: [
-                { n: "Atterrissage", t: "flying", cat: "Stat", pwr: 0, acc: 100 },
-                { n: "Vent Violent", t: "flying", cat: "Spe", pwr: 110, acc: 70 },
-                { n: "Demi-Tour", t: "bug", cat: "Phy", pwr: 70, acc: 100 },
-                { n: "Laser Glace", t: "ice", cat: "Spe", pwr: 90, acc: 100 }
-              ]
-            },
-            { id: 10100, name: "Raichu d'Alola", type: "Électrik / Psy", hp: 120, atk: 90, def: 55, atqSp: 100, defSp: 90, vit: 115, talent: "Surge Surfer", desc: "Double la Vitesse sur un Champ Électrifié.",
-              moves: [
-                { n: "Psyko", t: "psychic", cat: "Spe", pwr: 90, acc: 100 },
-                { n: "Tonnerre", t: "electric", cat: "Spe", pwr: 90, acc: 100 },
-                { n: "Nœud Herbe", t: "grass", cat: "Spe", pwr: 80, acc: 100 },
-                { n: "Change-Éclair", t: "electric", cat: "Spe", pwr: 70, acc: 100 }
-              ]
-            },
-            { id: 959, name: "Forgelina", type: "Fée / Acier", hp: 145, atk: 80, def: 82, atqSp: 75, defSp: 110, vit: 99, talent: "Brise-Moule", desc: "Ignore les talents défensifs de l'adversaire.",
-              moves: [
-                { n: "Danse Lames", t: "normal", cat: "Stat", pwr: 0, acc: 100 },
-                { n: "Marteau Mastoc", t: "steel", cat: "Phy", pwr: 160, acc: 100 },
-                { n: "Câlinerie", t: "fairy", cat: "Phy", pwr: 90, acc: 90 },
-                { n: "Cage Éclair", t: "electric", cat: "Stat", pwr: 0, acc: 90 }
-              ]
-            },
-            { id: 494, name: "Victini", type: "Psy / Feu", hp: 160, atk: 105, def: 105, atqSp: 105, defSp: 105, vit: 105, talent: "Victoire Étoilée", desc: "Augmente la précision du Pokémon et de ses alliés.",
-              moves: [
-                { n: "Coup Victoire", t: "fire", cat: "Phy", pwr: 180, acc: 95 },
-                { n: "Psyko", t: "psychic", cat: "Spe", pwr: 90, acc: 100 },
-                { n: "Tonnerre", t: "electric", cat: "Spe", pwr: 90, acc: 100 },
-                { n: "Sable Ardent", t: "ground", cat: "Spe", pwr: 70, acc: 100 }
-              ]
-            },
-            { id: 10103, name: "Feunard d'Alola", type: "Glace / Fée", hp: 133, atk: 72, def: 80, atqSp: 86, defSp: 105, vit: 114, talent: "Alerte Neige", desc: "Invoque une tempête de grêle en arrivant.",
-              moves: [
-                { n: "Pouvoir Lunaire", t: "fairy", cat: "Spe", pwr: 95, acc: 100 },
-                { n: "Lyophilisation", t: "ice", cat: "Spe", pwr: 70, acc: 100 },
-                { n: "Choc Psy", t: "psychic", cat: "Spe", pwr: 80, acc: 100 },
-                { n: "Voile Aurore", t: "ice", cat: "Stat", pwr: 0, acc: 100 }
-              ]
-            },
-            { id: 1000, name: "Gromago", type: "Acier / Spectre", hp: 147, atk: 65, def: 100, atqSp: 138, defSp: 96, vit: 89, talent: "Corps en Or", desc: "Protège le Pokémon contre toutes les capacités de statut.",
-              moves: [
-                { n: "Ruée d'Or", t: "steel", cat: "Spe", pwr: 120, acc: 100 },
-                { n: "Ball'Ombre", t: "ghost", cat: "Spe", pwr: 80, acc: 100 },
-                { n: "Machination", t: "dark", cat: "Stat", pwr: 0, acc: 100 },
-                { n: "Tonnerre", t: "electric", cat: "Spe", pwr: 90, acc: 100 }
-              ]
-            },
-            { id: 383, name: "Groudon", type: "Sol", hp: 160, atk: 155, def: 145, atqSp: 105, defSp: 95, vit: 95, talent: "Sécheresse", desc: "Invoque un soleil radieux en arrivant au combat.",
-              moves: [
-                { n: "Lame Pangéenne", t: "ground", cat: "Phy", pwr: 120, acc: 85 },
-                { n: "Lame de Roc", t: "rock", cat: "Phy", pwr: 100, acc: 80 },
-                { n: "Cage Éclair", t: "electric", cat: "Stat", pwr: 0, acc: 90 },
-                { n: "Danse Lames", t: "normal", cat: "Stat", pwr: 0, acc: 100 }
-              ]
-            },
-            { id: 34, name: "Nidoking", type: "Poison / Sol", hp: 141, atk: 107, def: 82, atqSp: 90, defSp: 80, vit: 90, talent: "Sans Limite", desc: "Augmente les dégâts mais retire les effets secondaires.",
-              moves: [
-                { n: "Telluriforce", t: "ground", cat: "Spe", pwr: 90, acc: 100 },
-                { n: "Laser Glace", t: "ice", cat: "Spe", pwr: 90, acc: 100 },
-                { n: "Lance-Flammes", t: "fire", cat: "Spe", pwr: 90, acc: 100 },
-                { n: "Cradovague", t: "poison", cat: "Spe", pwr: 95, acc: 100 }
-              ]
-            },
-            { id: 778, name: "Mimiqui", type: "Spectre / Fée", hp: 115, atk: 95, def: 85, atqSp: 55, defSp: 110, vit: 101, talent: "Fantômasque", desc: "Permet d'encaisser une attaque sans dégâts une seule fois.",
-              moves: [
-                { n: "Câlinerie", t: "fairy", cat: "Phy", pwr: 90, acc: 90 },
-                { n: "Danse Lames", t: "normal", cat: "Stat", pwr: 0, acc: 100 },
-                { n: "Cage Éclair", t: "electric", cat: "Stat", pwr: 0, acc: 90 },
-                { n: "Ball'Ombre", t: "ghost", cat: "Spe", pwr: 80, acc: 100 }
-              ]
-            }
+            { id: 392, name: "Simiabraz", type: "Feu / Combat", hp: 136, atk: 109, def: 76, atqSp: 109, defSp: 76, vit: 113, talent: "Brasier", desc: "Augmente Feu si PV bas.", moves: [{n:"Lance-Flammes",t:"fire",cat:"Spe",pwr:90,acc:100},{n:"Close Combat",t:"fighting",cat:"Phy",pwr:120,acc:100},{n:"Noeud'Herbe",t:"grass",cat:"Spe",pwr:80,acc:100},{n:"Puis. Cachée",t:"normal",cat:"Spe",pwr:60,acc:100}] },
+            { id: 887, name: "Lanssorien", type: "Dragon / Spectre", hp: 148, atk: 125, def: 80, atqSp: 105, defSp: 80, vit: 147, talent: "Corps Sain", desc: "Pas de baisse de stats.", moves: [{n:"Demi-Tour",t:"bug",cat:"Phy",pwr:70,acc:100},{n:"Lance-Flammes",t:"fire",cat:"Spe",pwr:90,acc:100},{n:"Draco Météor",t:"dragon",cat:"Spe",pwr:130,acc:90},{n:"Ball'Ombre",t:"ghost",cat:"Spe",pwr:80,acc:100}] },
+            { id: 184, name: "Azumarill", type: "Eau / Fée", hp: 160, atk: 55, def: 85, atqSp: 65, defSp: 85, vit: 55, talent: "Coloforce", desc: "Attaque x2.", moves: [{n:"Cognobidon",t:"normal",cat:"Stat",pwr:0,acc:100},{n:"Câlinerie",t:"fairy",cat:"Phy",pwr:90,acc:90},{n:"Cryo-Pirouette",t:"ice",cat:"Phy",pwr:80,acc:100},{n:"Aqua-Brèche",t:"water",cat:"Phy",pwr:85,acc:100}] },
+            { id: 724, name: "Archéduc", type: "Plante / Spectre", hp: 138, atk: 112, def: 80, atqSp: 105, defSp: 105, vit: 75, talent: "Engrais", desc: "Boost Plante.", moves: [{n:"Tisse Ombre",t:"ghost",cat:"Phy",pwr:80,acc:100},{n:"Rapace",t:"flying",cat:"Phy",pwr:120,acc:100},{n:"Lame Feuille",t:"grass",cat:"Phy",pwr:90,acc:100},{n:"Coup Bas",t:"dark",cat:"Phy",pwr:70,acc:100}] },
+            { id: 149, name: "Dracolosse", type: "Dragon / Vol", hp: 151, atk: 139, def: 100, atqSp: 105, defSp: 105, vit: 85, talent: "Attention", desc: "Pas de peur.", moves: [{n:"Vitesse Extrême",t:"normal",cat:"Phy",pwr:80,acc:100},{n:"Vent Violent",t:"flying",cat:"Spe",pwr:110,acc:70},{n:"Danse Draco",t:"dragon",cat:"Stat",pwr:0,acc:100},{n:"Draco-Griffe",t:"dragon",cat:"Phy",pwr:80,acc:100}] },
+            { id: 181, name: "Pharamp", type: "Électrik", hp: 150, atk: 80, def: 90, atqSp: 120, defSp: 95, vit: 60, talent: "Statik", desc: "Para au contact.", moves: [{n:"Tonnerre",t:"electric",cat:"Spe",pwr:90,acc:100},{n:"Change-Éclair",t:"electric",cat:"Spe",pwr:70,acc:100},{n:"Puis. Cachée",t:"normal",cat:"Spe",pwr:60,acc:100},{n:"Exploforce",t:"fighting",cat:"Spe",pwr:120,acc:70}] },
+            { id: 260, name: "Laggron", type: "Eau / Sol", hp: 160, atk: 115, def: 95, atqSp: 90, defSp: 95, vit: 65, talent: "Torrent", desc: "Boost Eau.", moves: [{n:"Séisme",t:"ground",cat:"Phy",pwr:100,acc:100},{n:"Eau Revoir",t:"water",cat:"Phy",pwr:70,acc:100},{n:"Laser Glace",t:"ice",cat:"Spe",pwr:90,acc:100},{n:"Cascade",t:"water",cat:"Phy",pwr:80,acc:100}] },
+            { id: 784, name: "Ékaïser", type: "Dragon / Combat", hp: 135, atk: 115, def: 130, atqSp: 105, defSp: 110, vit: 90, talent: "Anti-Bruit", desc: "Immunité son.", moves: [{n:"Danse Draco",t:"dragon",cat:"Stat",pwr:0,acc:100},{n:"Vampi-Poing",t:"fighting",cat:"Phy",pwr:75,acc:100},{n:"Close Combat",t:"fighting",cat:"Phy",pwr:120,acc:100},{n:"Vibracaille",t:"dragon",cat:"Spe",pwr:110,acc:100}] },
+            { id: 286, name: "Chapignon", type: "Plante / Combat", hp: 120, atk: 135, def: 85, atqSp: 65, defSp: 65, vit: 75, talent: "Technicien", desc: "Boost petites attaques.", moves: [{n:"Spore",t:"grass",cat:"Stat",pwr:0,acc:100},{n:"Canon Graine",t:"grass",cat:"Phy",pwr:80,acc:100},{n:"Mitra-Poing",t:"fighting",cat:"Phy",pwr:150,acc:100},{n:"Lame de Roc",t:"rock",cat:"Phy",pwr:100,acc:80}] },
+            { id: 144, name: "Artikodin", type: "Glace / Vol", hp: 150, atk: 90, def: 105, atqSp: 100, defSp: 130, vit: 90, talent: "Pression", desc: "Use les PP.", moves: [{n:"Atterrissage",t:"flying",cat:"Stat",pwr:0,acc:100},{n:"Vent Violent",t:"flying",cat:"Spe",pwr:110,acc:70},{n:"Demi-Tour",t:"bug",cat:"Phy",pwr:70,acc:100},{n:"Laser Glace",t:"ice",cat:"Spe",pwr:90,acc:100}] },
+            { id: 10100, name: "Raichu d'Alola", type: "Électrik / Psy", hp: 120, atk: 90, def: 55, atqSp: 100, defSp: 90, vit: 115, talent: "Surge Surfer", desc: "Vitesse x2 sous champ.", moves: [{n:"Psyko",t:"psychic",cat:"Spe",pwr:90,acc:100},{n:"Tonnerre",t:"electric",cat:"Spe",pwr:90,acc:100},{n:"Nœud Herbe",t:"grass",cat:"Spe",pwr:80,acc:100},{n:"Change-Éclair",t:"electric",cat:"Spe",pwr:70,acc:100}] },
+            { id: 959, name: "Forgelina", type: "Fée / Acier", hp: 145, atk: 80, def: 82, atqSp: 75, defSp: 110, vit: 99, talent: "Brise-Moule", desc: "Ignore talents.", moves: [{n:"Danse Lames",t:"normal",cat:"Stat",pwr:0,acc:100},{n:"Marteau Mastoc",t:"steel",cat:"Phy",pwr:160,acc:100},{n:"Câlinerie",t:"fairy",cat:"Phy",pwr:90,acc:90},{n:"Cage Éclair",t:"electric",cat:"Stat",pwr:0,acc:90}] },
+            { id: 494, name: "Victini", type: "Psy / Feu", hp: 160, atk: 105, def: 105, atqSp: 105, defSp: 105, vit: 105, talent: "Victoire Étoilée", desc: "Boost Précision.", moves: [{n:"Coup Victoire",t:"fire",cat:"Phy",pwr:180,acc:95},{n:"Psyko",t:"psychic",cat:"Spe",pwr:90,acc:100},{n:"Tonnerre",t:"electric",cat:"Spe",pwr:90,acc:100},{n:"Sable Ardent",t:"ground",cat:"Spe",pwr:70,acc:100}] },
+            { id: 10103, name: "Feunard d'Alola", type: "Glace / Fée", hp: 133, atk: 72, def: 80, atqSp: 86, defSp: 105, vit: 114, talent: "Alerte Neige", desc: "Grêle.", moves: [{n:"Pouvoir Lunaire",t:"fairy",cat:"Spe",pwr:95,acc:100},{n:"Lyophilisation",t:"ice",cat:"Spe",pwr:70,acc:100},{n:"Choc Psy",t:"psychic",cat:"Spe",pwr:80,acc:100},{n:"Voile Aurore",t:"ice",cat:"Stat",pwr:0,acc:100}] },
+            { id: 1000, name: "Gromago", type: "Acier / Spectre", hp: 147, atk: 65, def: 100, atqSp: 138, defSp: 96, vit: 89, talent: "Corps en Or", desc: "Immunité Statut.", moves: [{n:"Ruée d'Or",t:"steel",cat:"Spe",pwr:120,acc:100},{n:"Ball'Ombre",t:"ghost",cat:"Spe",pwr:80,acc:100},{n:"Machination",t:"dark",cat:"Stat",pwr:0,acc:100},{n:"Tonnerre",t:"electric",cat:"Spe",pwr:90,acc:100}] },
+            { id: 383, name: "Groudon", type: "Sol", hp: 160, atk: 155, def: 145, atqSp: 105, defSp: 95, vit: 95, talent: "Sécheresse", desc: "Soleil.", moves: [{n:"Lame Pangéenne",t:"ground",cat:"Phy",pwr:120,acc:85},{n:"Lame de Roc",t:"rock",cat:"Phy",pwr:100,acc:80},{n:"Cage Éclair",t:"electric",cat:"Stat",pwr:0,acc:90},{n:"Danse Lames",t:"normal",cat:"Stat",pwr:0,acc:100}] },
+            { id: 34, name: "Nidoking", type: "Poison / Sol", hp: 141, atk: 107, def: 82, atqSp: 90, defSp: 80, vit: 90, talent: "Sans Limite", desc: "Boost sans effet.", moves: [{n:"Telluriforce",t:"ground",cat:"Spe",pwr:90,acc:100},{n:"Laser Glace",t:"ice",cat:"Spe",pwr:90,acc:100},{n:"Lance-Flammes",t:"fire",cat:"Spe",pwr:90,acc:100},{n:"Cradovague",t:"poison",cat:"Spe",pwr:95,acc:100}] },
+            { id: 778, name: "Mimiqui", type: "Spectre / Fée", hp: 115, atk: 95, def: 85, atqSp: 55, defSp: 110, vit: 101, talent: "Fantômasque", desc: "Encaisse 1 coup.", moves: [{n:"Câlinerie",t:"fairy",cat:"Phy",pwr:90,acc:90},{n:"Danse Lames",t:"normal",cat:"Stat",pwr:0,acc:100},{n:"Cage Éclair",t:"electric",cat:"Stat",pwr:0,acc:90},{n:"Ball'Ombre",t:"ghost",cat:"Spe",pwr:80,acc:100}] }
         ];
 
+        // --- ÉTAT DU JEU ---
+        let monEquipe = [];
+        let peer = new Peer();
+        let conn = null;
+
+        // --- RÉSEAU ---
+        peer.on('open', id => document.getElementById('status').innerText = "Réseau prêt !");
+        peer.on('connection', c => { conn = c; ecouterReseau(); demarrerJeu(); });
+
+        function creerPartie() { document.getElementById('display-id').innerText = peer.id; }
+        function rejoindrePartie() { 
+            let code = document.getElementById('input-code').value;
+            conn = peer.connect(code);
+            conn.on('open', () => { ecouterReseau(); demarrerJeu(); });
+        }
+
+        function ecouterReseau() {
+            conn.on('data', data => {
+                if(data.type === "ready") console.log("Adversaire prêt !");
+            });
+        }
+
+        function demarrerJeu() {
+            document.getElementById('screen-multi').classList.add('hidden');
+            document.getElementById('game-zone').classList.remove('hidden');
+        }
+
+        // --- LOGIQUE PC & ÉQUIPE ---
         function ouvrirBoitePC() {
-            document.getElementById('main-menu').classList.add('hidden');
             document.getElementById('boite-pc').classList.remove('hidden');
             const liste = document.getElementById('liste-pokemon');
-            liste.innerHTML = ""; 
-            listePokemon.forEach((poke, index) => {
-                liste.innerHTML += `
-                    <div class="slot-poke" onclick="selectionnerPokemon(${index})">
-                        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${poke.id}.png">
-                    </div>`;
+            liste.innerHTML = "";
+            listePokemon.forEach((p, index) => {
+                liste.innerHTML += `<div class="slot-poke" onclick="voirDetails(${index})"><img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p.id}.png"></div>`;
             });
         }
 
-        function fermerBoitePC() { 
-            document.getElementById('boite-pc').classList.add('hidden'); 
-            document.getElementById('main-menu').classList.remove('hidden'); 
-            fermerPopup(); 
-        }
-
-        function selectionnerPokemon(index) {
-            const poke = listePokemon[index];
-            document.getElementById('pop-name').innerHTML = `${poke.name.toUpperCase()}<br><span style="font-size:0.55em; color:#ccc; font-weight:normal;">${poke.type}</span>`;
+        function voirDetails(index) {
+            const p = listePokemon[index];
+            document.getElementById('pop-name').innerText = p.name.toUpperCase();
             document.getElementById('pop-up-details').style.display = "block";
             
-            const containerStats = document.getElementById('stats-container');
-            const stats = [
-                {l: 'PV', v: poke.hp}, {l: 'Atq', v: poke.atk}, {l: 'Déf', v: poke.def},
-                {l: 'AtqSp', v: poke.atqSp}, {l: 'DéfSp', v: poke.defSp}, {l: 'Vit', v: poke.vit}
-            ];
-            let htmlStats = ""; let total = 0;
-            stats.forEach(s => {
-                total += s.v;
-                let percent = Math.min((s.v / 160) * 100, 100); 
-                htmlStats += `<div class="stat-row"><div class="stat-label">${s.l}: ${s.v}</div><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${percent}%"></div></div></div>`;
+            // Stats
+            let sH = ""; 
+            [{l:'PV',v:p.hp},{l:'ATQ',v:p.atk},{l:'DEF',v:p.def},{l:'SPA',v:p.atqSp},{l:'SPD',v:p.defSp},{l:'VIT',v:p.vit}].forEach(s => {
+                sH += `<div class="stat-row"><div class="stat-label">${s.l}: ${s.v}</div><div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${(s.v/160)*100}%"></div></div></div>`;
             });
-            containerStats.innerHTML = htmlStats;
-            document.getElementById('stat-total').innerText = "Total: " + total;
-
-            document.getElementById('talent-name').innerText = poke.talent;
-            document.getElementById('talent-desc').innerText = poke.desc;
-
-            const containerMoves = document.getElementById('moves-container');
-            containerMoves.innerHTML = "";
-            poke.moves.forEach(m => {
-                containerMoves.innerHTML += `
-                    <div class="move-row type-${m.t}">
-                        <span class="move-name">${m.n}</span>
-                        <span class="move-stats">${m.cat} | Pwr: ${m.pwr} | ${m.acc}%</span>
-                    </div>`;
-            });
+            document.getElementById('stats-container').innerHTML = sH;
             
+            // Talent
+            document.getElementById('talent-name').innerText = p.talent;
+            document.getElementById('talent-desc').innerText = p.desc;
+
+            // Moves
+            let mH = ""; p.moves.forEach(m => {
+                mH += `<div class="move-row type-${m.t}"><span>${m.n}</span><span class="move-info">Pwr:${m.pwr}</span></div>`;
+            });
+            document.getElementById('moves-container').innerHTML = mH;
+
+            document.getElementById('btn-ajouter').onclick = () => ajouterATeam(index);
             switchTab('stats');
         }
 
-        function switchTab(type) {
-            const views = ['view-stats', 'view-talent', 'view-moves'];
-            views.forEach(v => document.getElementById(v).classList.add('hidden'));
-            document.getElementById('view-' + type).classList.remove('hidden');
-            const btns = document.querySelectorAll('.tab-btn');
-            btns.forEach(b => b.classList.remove('active'));
-            if(type === 'stats') btns[0].classList.add('active');
-            if(type === 'talent') btns[1].classList.add('active');
-            if(type === 'moves') btns[2].classList.add('active');
+        function ajouterATeam(index) {
+            if(monEquipe.length >= 6) return alert("Équipe complète !");
+            monEquipe.push(listePokemon[index]);
+            MAJEquipeGraphique();
+            fermerPopup();
         }
 
+        function MAJEquipeGraphique() {
+            for(let i=0; i<6; i++) {
+                const slot = document.getElementById('slot-'+i);
+                slot.innerHTML = "";
+                if(monEquipe[i]) {
+                    slot.innerHTML = `<img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${monEquipe[i].id}.png"><button class="remove-poke" onclick="retirerDuSlot(${i})">X</button>`;
+                }
+            }
+            document.getElementById('btn-prets').classList.toggle('hidden', monEquipe.length < 6);
+        }
+
+        function retirerDuSlot(i) {
+            monEquipe.splice(i, 1);
+            MAJEquipeGraphique();
+        }
+
+        function validerEquipe() {
+            conn.send({type: "ready", team: monEquipe});
+            alert("Équipe envoyée ! En attente de l'adversaire...");
+        }
+
+        function fermerBoitePC() { document.getElementById('boite-pc').classList.add('hidden'); }
         function fermerPopup() { document.getElementById('pop-up-details').style.display = "none"; }
+        function switchTab(t) {
+            ['view-stats','view-talent','view-moves'].forEach(v => document.getElementById(v).classList.add('hidden'));
+            document.getElementById('view-'+t).classList.remove('hidden');
+        }
     </script>
 </body>
 </html>
