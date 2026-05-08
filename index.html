@@ -28,7 +28,6 @@
             margin-bottom: 20px;
             transition: 0.3s;
         }
-        
         .bouton-jouer:hover { transform: scale(1.1); }
 
         .bouton-info {
@@ -55,13 +54,12 @@
             margin-top: 20px;
         }
 
-        /* Styles pour la Boîte PC */
         #boite-pc {
-            background-image: url('image_2.png'); /* Ton image de fond fournie */
+            background-image: url('image_2.png'); 
             background-size: cover;
             background-position: center;
-            width: 80%;
-            height: 70vh;
+            width: 900px;
+            height: 550px;
             margin: 30px auto;
             border: 10px solid #555;
             border-radius: 20px;
@@ -72,9 +70,9 @@
         .grid-pc {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
-            grid-template-rows: repeat(5, 1fr);
-            gap: 10px;
-            padding: 20px;
+            grid-template-rows: repeat(3, 1fr);
+            gap: 15px;
+            padding: 40px;
             height: 100%;
             box-sizing: border-box;
         }
@@ -89,19 +87,9 @@
             cursor: pointer;
             transition: 0.2s;
         }
+        .slot-poke:hover { background: rgba(255, 255, 255, 0.3); border-color: gold; transform: scale(1.05); }
+        .slot-poke img { width: 90px; image-rendering: pixelated; }
 
-        .slot-poke:hover {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: gold;
-            transform: scale(1.05);
-        }
-
-        .slot-poke img {
-            width: 80%;
-            image-rendering: pixelated; /* Pour garder le côté rétro si besoin */
-        }
-
-        /* Bouton Retour dans le PC */
         .btn-retour-pc {
             position: absolute;
             top: 10px;
@@ -113,13 +101,39 @@
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
+            z-index: 10;
         }
 
-        footer { 
-            color: #555; 
-            margin-top: 100px; 
-            font-size: 0.8em; 
+        /* POPUP DETAILS */
+        #pop-up-details {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #2c2c34;
+            border: 3px solid #ee1515;
+            width: 380px;
+            border-radius: 15px;
+            z-index: 200;
+            color: white;
+            padding-bottom: 20px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.7);
         }
+
+        .tabs { display: flex; background: #1a1a1a; border-radius: 12px 12px 0 0; }
+        .tab-btn { padding: 12px; border: none; background: none; color: #888; cursor: pointer; font-weight: bold; width: 45%; }
+        .tab-btn.active { color: white; border-bottom: 3px solid gold; }
+
+        .content-area { padding: 20px; text-align: left; }
+        .stat-row { display: flex; align-items: center; margin-bottom: 10px; font-family: 'Courier New', Courier, monospace; }
+        .stat-label { width: 90px; font-size: 0.95em; }
+        .stat-bar-bg { flex-grow: 1; background: #444; height: 14px; border-radius: 7px; overflow: hidden; margin-left: 10px; border: 1px solid #111; }
+        .stat-bar-fill { background: #50c878; height: 100%; transition: width 0.6s ease-out; }
+        
+        .total-txt { color: gold; font-weight: bold; margin-top: 15px; text-align: right; border-top: 1px solid #444; padding-top: 5px; }
+
+        footer { color: #555; margin-top: 50px; font-size: 0.8em; }
     </style>
 </head>
 
@@ -127,14 +141,9 @@
 
     <div id="main-menu">
         <h1>POKÉ-BATTLE 2</h1>
-
+        <div><button class="bouton-jouer">JOUER</button></div>
         <div>
-            <button class="bouton-jouer">JOUER</button>
-        </div>
-
-        <div>
-            <button class="bouton-info" onclick="ouvrirBoitePC()">INFO POKÉMON</button>
-            <br>
+            <button class="bouton-info" onclick="ouvrirBoitePC()">INFO POKÉMON</button><br>
             <a href="https://poke-multi.vercel.app" class="bouton-ancien">RETOUR POKÉ-BATTLE 1</a>
         </div>
     </div>
@@ -144,73 +153,106 @@
         <div class="grid-pc" id="liste-pokemon"></div>
     </div>
 
-    <footer>
-        Réalisé par Vegechou, By Vegechou
-    </footer>
+    <div id="pop-up-details">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('stats')">STATS</button>
+            <button class="tab-btn" onclick="switchTab('talent')">TALENT</button>
+            <button style="color:white; background:red; border:none; cursor:pointer; flex-grow:1; border-radius:0 12px 0 0;" onclick="fermerPopup()">X</button>
+        </div>
+        
+        <div id="view-stats" class="content-area">
+            <h3 id="pop-name" style="text-align:center; margin-top:0; color:gold;">NOM</h3>
+            <div id="stats-container"></div>
+            <div class="total-txt" id="stat-total">Total: 0</div>
+        </div>
+
+        <div id="view-talent" class="content-area hidden">
+            <h3 id="talent-name" style="color:gold;">Talent</h3>
+            <p id="talent-desc" style="font-size:1em; line-height:1.5; background: #1a1a1a; padding: 10px; border-radius: 8px;"></p>
+        </div>
+    </div>
+
+    <footer>Réalisé par Vegechou, By Vegechou</footer>
 
     <script>
-        // Ta liste précise de Pokémon avec leurs IDs officiels pour les images
         const listePokemon = [
-            { id: 392, name: "Simiabraze" },
-            { id: 887, name: "Lanssorien" },
-            { id: 184, name: "Azumarill" },
-            { id: 724, name: "Archéduc" },
-            { id: 149, name: "Dracolosse" },
-            { id: 181, name: "Pharamp" },
-            { id: 260, name: "Laggron" },
-            { id: 784, name: "Ékaïser" },
-            { id: 286, name: "Chapignon" },
-            { id: 144, name: "Artikodin" },
-            { id: 26, name: "Raichu d'alola", sprite: "26-alola" }, // Sprite spécifique
-            {id: 959, name: "Forgelina" },
-            { id: 494, name: "Victini" },
-            { id: 10103, name: "Feunard d'alola" }, // Sprite spécifique
-            { id: 1000, name: "Gromago" },
-            { id: 383, name: "Groudon" },
-            { id: 34, name: "Nidoking" },
-            { id: 778, name: "Mimiqui" }
+            { id: 392, name: "Simiabraz", hp: 136, atk: 109, def: 76, atqSp: 109, defSp: 76, vit: 113, talent: "Brasier", desc: "Augmente la puissance des capacités Feu quand les PV sont bas." },
+            { id: 887, name: "Lanssorien", hp: 148, atk: 125, def: 80, atqSp: 105, defSp: 80, vit: 147, talent: "Corps Sain", desc: "Empêche les stats de baisser à cause de l'adversaire." },
+            { id: 184, name: "Azumarill", hp: 160, atk: 55, def: 85, atqSp: 65, defSp: 85, vit: 55, talent: "Coloforce", desc: "Double l'Attaque du Pokémon au combat." },
+            { id: 724, name: "Archéduc", hp: 138, atk: 112, def: 80, atqSp: 105, defSp: 105, vit: 75, talent: "Engrais", desc: "Augmente la puissance des capacités Plante quand les PV sont bas." },
+            { id: 149, name: "Dracolosse", hp: 151, atk: 139, def: 100, atqSp: 105, defSp: 105, vit: 85, talent: "Attention", desc: "Empêche le Pokémon d'avoir peur." },
+            { id: 181, name: "Pharamp", hp: 150, atk: 80, def: 90, atqSp: 120, defSp: 95, vit: 60, talent: "Statik", desc: "Peut paralyser l'adversaire s'il y a un contact physique." },
+            { id: 260, name: "Laggron", hp: 160, atk: 115, def: 95, atqSp: 90, defSp: 95, vit: 65, talent: "Torrent", desc: "Augmente la puissance des capacités Eau quand les PV sont bas." },
+            { id: 784, name: "Ékaïser", hp: 135, atk: 115, def: 130, atqSp: 105, defSp: 110, vit: 90, talent: "Anti-Bruit", desc: "Protège contre les attaques sonores adverses." },
+            { id: 286, name: "Chapignon", hp: 120, atk: 135, def: 85, atqSp: 65, defSp: 65, vit: 75, talent: "Technicien", desc: "Renforce les capacités de faible puissance." },
+            { id: 144, name: "Artikodin", hp: 150, atk: 90, def: 105, atqSp: 100, defSp: 130, vit: 90, talent: "Pression", desc: "Force l'adversaire à utiliser plus de PP." },
+            { id: 10100, name: "Raichu d'Alola", hp: 120, atk: 90, def: 55, atqSp: 100, defSp: 90, vit: 115, talent: "Surge Surfer", desc: "Double la Vitesse sur un Champ Électrifié." },
+            { id: 959, name: "Forgelina", hp: 145, atk: 80, def: 82, atqSp: 75, defSp: 110, vit: 99, talent: "Brise-Moule", desc: "Ignore les talents défensifs de l'adversaire." },
+            { id: 494, name: "Victini", hp: 160, atk: 105, def: 105, atqSp: 105, defSp: 105, vit: 105, talent: "Victoire Étoilée", desc: "Augmente la précision du Pokémon et de ses alliés." },
+            { id: 10103, name: "Feunard d'Alola", hp: 133, atk: 72, def: 80, atqSp: 86, defSp: 105, vit: 114, talent: "Alerte Neige", desc: "Invoque une tempête de grêle en arrivant." },
+            { id: 1000, name: "Gromago", hp: 147, atk: 65, def: 100, atqSp: 138, defSp: 96, vit: 89, talent: "Corps en Or", desc: "Protège le Pokémon contre toutes les capacités de statut." },
+            { id: 383, name: "Groudon", hp: 160, atk: 155, def: 145, atqSp: 105, defSp: 95, vit: 95, talent: "Sécheresse", desc: "Invoque un soleil radieux en arrivant au combat." },
+            { id: 34, name: "Nidoking", hp: 141, atk: 107, def: 82, atqSp: 90, defSp: 80, vit: 90, talent: "Sans Limite", desc: "Augmente les dégâts mais retire les effets secondaires." },
+            { id: 778, name: "Mimiqui", hp: 115, atk: 95, def: 85, atqSp: 55, defSp: 110, vit: 101, talent: "Fantômasque", desc: "Permet d'encaisser une attaque sans dégâts une seule fois." }
         ];
 
         function ouvrirBoitePC() {
             document.getElementById('main-menu').classList.add('hidden');
             document.getElementById('boite-pc').classList.remove('hidden');
-            
             const liste = document.getElementById('liste-pokemon');
-            liste.innerHTML = ""; // Vide la grille avant de la remplir
-            
-            // On remplit les 18 slots avec tes Pokémon
-            for (let i = 0; i < 18; i++) {
-                const poke = listePokemon[i];
-                if (poke) {
-                    // Récupération de l'image (on utilise les sprites pixel car ça colle bien au fond PC)
-                    let spriteURL = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${poke.id}.png`;
-                    
-                    // Cas particuliers pour Alola
-                    if(poke.sprite === "26-alola") { spriteURL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10100.png"; }
-                    if(poke.sprite === "38-alola") { spriteURL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10103.png"; }
+            liste.innerHTML = ""; 
+            listePokemon.forEach((poke, index) => {
+                liste.innerHTML += `
+                    <div class="slot-poke" onclick="selectionnerPokemon(${index})">
+                        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${poke.id}.png">
+                    </div>`;
+            });
+        }
 
-                    liste.innerHTML += `
-                        <div class="slot-poke" title="${poke.name}" onclick="selectionnerPokemon(${i})">
-                            <img src="${spriteURL}" alt="${poke.name}">
-                        </div>
-                    `;
-                } else {
-                    // Slots vides si on n'a pas 30 Pokémon (pour l'esthétique PC)
-                    liste.innerHTML += `<div class="slot-poke"></div>`;
-                }
+        function selectionnerPokemon(index) {
+            const poke = listePokemon[index];
+            document.getElementById('pop-name').innerText = poke.name.toUpperCase();
+            document.getElementById('pop-up-details').style.display = "block";
+            
+            const container = document.getElementById('stats-container');
+            const stats = [
+                {l: 'PV', v: poke.hp}, {l: 'Atq', v: poke.atk}, {l: 'Déf', v: poke.def},
+                {l: 'AtqSp', v: poke.atqSp}, {l: 'DéfSp', v: poke.defSp}, {l: 'Vit', v: poke.vit}
+            ];
+            
+            let html = "";
+            let total = 0;
+            stats.forEach(s => {
+                total += s.v;
+                let percent = Math.min((s.v / 160) * 100, 100); 
+                html += `
+                    <div class="stat-row">
+                        <div class="stat-label">${s.l}: ${s.v}</div>
+                        <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${percent}%"></div></div>
+                    </div>`;
+            });
+            container.innerHTML = html;
+            document.getElementById('stat-total').innerText = "Total: " + total;
+            document.getElementById('talent-name').innerText = poke.talent;
+            document.getElementById('talent-desc').innerText = poke.desc;
+            switchTab('stats');
+        }
+
+        function switchTab(type) {
+            const s = document.getElementById('view-stats');
+            const t = document.getElementById('view-talent');
+            const btns = document.querySelectorAll('.tab-btn');
+            if(type === 'stats') {
+                s.classList.remove('hidden'); t.classList.add('hidden');
+                btns[0].classList.add('active'); btns[1].classList.remove('active');
+            } else {
+                s.classList.add('hidden'); t.classList.remove('hidden');
+                btns[0].classList.remove('active'); btns[1].classList.add('active');
             }
         }
 
-        function fermerBoitePC() {
-            document.getElementById('boite-pc').classList.add('hidden');
-            document.getElementById('main-menu').classList.remove('hidden');
-        }
-
-        // Fonction vide pour le moment comme demandé
-        function selectionnerPokemon(index) {
-            console.log("Pokémon sélectionné : " + listePokemon[index].name);
-        }
+        function fermerBoitePC() { document.getElementById('boite-pc').classList.add('hidden'); document.getElementById('main-menu').classList.remove('hidden'); fermerPopup(); }
+        function fermerPopup() { document.getElementById('pop-up-details').style.display = "none"; }
     </script>
-
 </body>
 </html>
