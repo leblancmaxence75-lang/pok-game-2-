@@ -133,7 +133,6 @@
         
         .total-txt { color: gold; font-weight: bold; margin-top: 15px; text-align: right; border-top: 1px solid #444; padding-top: 5px; }
 
-        /* Style des attaques */
         .move-row {
             background: #1a1a1a;
             margin-bottom: 5px;
@@ -147,7 +146,7 @@
         .move-name { font-weight: bold; color: #fff; }
         .move-stats { color: #aaa; text-align: right; }
         
-        /* Couleurs des bordures par type d'attaque */
+        /* Couleurs des bordures par type */
         .type-fire { border-color: #ff4422; }
         .type-fighting { border-color: #bb5544; }
         .type-grass { border-color: #77cc55; }
@@ -160,6 +159,11 @@
         .type-normal { border-color: #aaaa99; }
         .type-flying { border-color: #8899ff; }
         .type-electric { border-color: #ffcc33; }
+        .type-ground { border-color: #e2bf65; }
+        .type-rock { border-color: #b6a136; }
+        .type-psychic { border-color: #f85888; }
+        .type-steel { border-color: #b8b8d0; }
+        .type-poison { border-color: #a040a0; }
         .type-dark { border-color: #705848; }
 
         footer { color: #555; margin-top: 50px; font-size: 0.8em; }
@@ -259,18 +263,102 @@
                 { n: "Exploforce", t: "fighting", cat: "Spe", pwr: 120, acc: 70 }
               ]
             },
-            { id: 260, name: "Laggron", type: "Eau / Sol", hp: 160, atk: 115, def: 95, atqSp: 90, defSp: 95, vit: 65, talent: "Torrent", desc: "Augmente la puissance des capacités Eau quand les PV sont bas." },
-            { id: 784, name: "Ékaïser", type: "Dragon / Combat", hp: 135, atk: 115, def: 130, atqSp: 105, defSp: 110, vit: 90, talent: "Anti-Bruit", desc: "Protège contre les attaques sonores adverses." },
-            { id: 286, name: "Chapignon", type: "Plante / Combat", hp: 120, atk: 135, def: 85, atqSp: 65, defSp: 65, vit: 75, talent: "Technicien", desc: "Renforce les capacités de faible puissance." },
-            { id: 144, name: "Artikodin", type: "Glace / Vol", hp: 150, atk: 90, def: 105, atqSp: 100, defSp: 130, vit: 90, talent: "Pression", desc: "Force l'adversaire à utiliser plus de PP." },
-            { id: 10100, name: "Raichu d'Alola", type: "Électrik / Psy", hp: 120, atk: 90, def: 55, atqSp: 100, defSp: 90, vit: 115, talent: "Surge Surfer", desc: "Double la Vitesse sur un Champ Électrifié." },
-            { id: 959, name: "Forgelina", type: "Fée / Acier", hp: 145, atk: 80, def: 82, atqSp: 75, defSp: 110, vit: 99, talent: "Brise-Moule", desc: "Ignore les talents défensifs de l'adversaire." },
-            { id: 494, name: "Victini", type: "Psy / Feu", hp: 160, atk: 105, def: 105, atqSp: 105, defSp: 105, vit: 105, talent: "Victoire Étoilée", desc: "Augmente la précision du Pokémon et de ses alliés." },
-            { id: 10103, name: "Feunard d'Alola", type: "Glace / Fée", hp: 133, atk: 72, def: 80, atqSp: 86, defSp: 105, vit: 114, talent: "Alerte Neige", desc: "Invoque une tempête de grêle en arrivant." },
-            { id: 1000, name: "Gromago", type: "Acier / Spectre", hp: 147, atk: 65, def: 100, atqSp: 138, defSp: 96, vit: 89, talent: "Corps en Or", desc: "Protège le Pokémon contre toutes les capacités de statut." },
-            { id: 383, name: "Groudon", type: "Sol", hp: 160, atk: 155, def: 145, atqSp: 105, defSp: 95, vit: 95, talent: "Sécheresse", desc: "Invoque un soleil radieux en arrivant au combat." },
-            { id: 34, name: "Nidoking", type: "Poison / Sol", hp: 141, atk: 107, def: 82, atqSp: 90, defSp: 80, vit: 90, talent: "Sans Limite", desc: "Augmente les dégâts mais retire les effets secondaires." },
-            { id: 778, name: "Mimiqui", type: "Spectre / Fée", hp: 115, atk: 95, def: 85, atqSp: 55, defSp: 110, vit: 101, talent: "Fantômasque", desc: "Permet d'encaisser une attaque sans dégâts une seule fois." }
+            { id: 260, name: "Laggron", type: "Eau / Sol", hp: 160, atk: 115, def: 95, atqSp: 90, defSp: 95, vit: 65, talent: "Torrent", desc: "Augmente la puissance des capacités Eau quand les PV sont bas.",
+              moves: [
+                { n: "Séisme", t: "ground", cat: "Phy", pwr: 100, acc: 100 },
+                { n: "Eau Revoir", t: "water", cat: "Phy", pwr: 70, acc: 100 },
+                { n: "Laser Glace", t: "ice", cat: "Spe", pwr: 90, acc: 100 },
+                { n: "Cascade", t: "water", cat: "Phy", pwr: 80, acc: 100 }
+              ]
+            },
+            { id: 784, name: "Ékaïser", type: "Dragon / Combat", hp: 135, atk: 115, def: 130, atqSp: 105, defSp: 110, vit: 90, talent: "Anti-Bruit", desc: "Protège contre les attaques sonores adverses.",
+              moves: [
+                { n: "Danse Draco", t: "dragon", cat: "Stat", pwr: 0, acc: 100 },
+                { n: "Vampi-Poing", t: "fighting", cat: "Phy", pwr: 75, acc: 100 },
+                { n: "Close Combat", t: "fighting", cat: "Phy", pwr: 120, acc: 100 },
+                { n: "Vibracaille", t: "dragon", cat: "Spe", pwr: 110, acc: 100 }
+              ]
+            },
+            { id: 286, name: "Chapignon", type: "Plante / Combat", hp: 120, atk: 135, def: 85, atqSp: 65, defSp: 65, vit: 75, talent: "Technicien", desc: "Renforce les capacités de faible puissance.",
+              moves: [
+                { n: "Spore", t: "grass", cat: "Stat", pwr: 0, acc: 100 },
+                { n: "Canon Graine", t: "grass", cat: "Phy", pwr: 80, acc: 100 },
+                { n: "Mitra-Poing", t: "fighting", cat: "Phy", pwr: 150, acc: 100 },
+                { n: "Lame de Roc", t: "rock", cat: "Phy", pwr: 100, acc: 80 }
+              ]
+            },
+            { id: 144, name: "Artikodin", type: "Glace / Vol", hp: 150, atk: 90, def: 105, atqSp: 100, defSp: 130, vit: 90, talent: "Pression", desc: "Force l'adversaire à utiliser plus de PP.",
+              moves: [
+                { n: "Atterrissage", t: "flying", cat: "Stat", pwr: 0, acc: 100 },
+                { n: "Vent Violent", t: "flying", cat: "Spe", pwr: 110, acc: 70 },
+                { n: "Demi-Tour", t: "bug", cat: "Phy", pwr: 70, acc: 100 },
+                { n: "Laser Glace", t: "ice", cat: "Spe", pwr: 90, acc: 100 }
+              ]
+            },
+            { id: 10100, name: "Raichu d'Alola", type: "Électrik / Psy", hp: 120, atk: 90, def: 55, atqSp: 100, defSp: 90, vit: 115, talent: "Surge Surfer", desc: "Double la Vitesse sur un Champ Électrifié.",
+              moves: [
+                { n: "Psyko", t: "psychic", cat: "Spe", pwr: 90, acc: 100 },
+                { n: "Tonnerre", t: "electric", cat: "Spe", pwr: 90, acc: 100 },
+                { n: "Nœud Herbe", t: "grass", cat: "Spe", pwr: 80, acc: 100 },
+                { n: "Change-Éclair", t: "electric", cat: "Spe", pwr: 70, acc: 100 }
+              ]
+            },
+            { id: 959, name: "Forgelina", type: "Fée / Acier", hp: 145, atk: 80, def: 82, atqSp: 75, defSp: 110, vit: 99, talent: "Brise-Moule", desc: "Ignore les talents défensifs de l'adversaire.",
+              moves: [
+                { n: "Danse Lames", t: "normal", cat: "Stat", pwr: 0, acc: 100 },
+                { n: "Marteau Mastoc", t: "steel", cat: "Phy", pwr: 160, acc: 100 },
+                { n: "Câlinerie", t: "fairy", cat: "Phy", pwr: 90, acc: 90 },
+                { n: "Cage Éclair", t: "electric", cat: "Stat", pwr: 0, acc: 90 }
+              ]
+            },
+            { id: 494, name: "Victini", type: "Psy / Feu", hp: 160, atk: 105, def: 105, atqSp: 105, defSp: 105, vit: 105, talent: "Victoire Étoilée", desc: "Augmente la précision du Pokémon et de ses alliés.",
+              moves: [
+                { n: "Coup Victoire", t: "fire", cat: "Phy", pwr: 180, acc: 95 },
+                { n: "Psyko", t: "psychic", cat: "Spe", pwr: 90, acc: 100 },
+                { n: "Tonnerre", t: "electric", cat: "Spe", pwr: 90, acc: 100 },
+                { n: "Sable Ardent", t: "ground", cat: "Spe", pwr: 70, acc: 100 }
+              ]
+            },
+            { id: 10103, name: "Feunard d'Alola", type: "Glace / Fée", hp: 133, atk: 72, def: 80, atqSp: 86, defSp: 105, vit: 114, talent: "Alerte Neige", desc: "Invoque une tempête de grêle en arrivant.",
+              moves: [
+                { n: "Pouvoir Lunaire", t: "fairy", cat: "Spe", pwr: 95, acc: 100 },
+                { n: "Lyophilisation", t: "ice", cat: "Spe", pwr: 70, acc: 100 },
+                { n: "Choc Psy", t: "psychic", cat: "Spe", pwr: 80, acc: 100 },
+                { n: "Voile Aurore", t: "ice", cat: "Stat", pwr: 0, acc: 100 }
+              ]
+            },
+            { id: 1000, name: "Gromago", type: "Acier / Spectre", hp: 147, atk: 65, def: 100, atqSp: 138, defSp: 96, vit: 89, talent: "Corps en Or", desc: "Protège le Pokémon contre toutes les capacités de statut.",
+              moves: [
+                { n: "Ruée d'Or", t: "steel", cat: "Spe", pwr: 120, acc: 100 },
+                { n: "Ball'Ombre", t: "ghost", cat: "Spe", pwr: 80, acc: 100 },
+                { n: "Machination", t: "dark", cat: "Stat", pwr: 0, acc: 100 },
+                { n: "Tonnerre", t: "electric", cat: "Spe", pwr: 90, acc: 100 }
+              ]
+            },
+            { id: 383, name: "Groudon", type: "Sol", hp: 160, atk: 155, def: 145, atqSp: 105, defSp: 95, vit: 95, talent: "Sécheresse", desc: "Invoque un soleil radieux en arrivant au combat.",
+              moves: [
+                { n: "Lame Pangéenne", t: "ground", cat: "Phy", pwr: 120, acc: 85 },
+                { n: "Lame de Roc", t: "rock", cat: "Phy", pwr: 100, acc: 80 },
+                { n: "Cage Éclair", t: "electric", cat: "Stat", pwr: 0, acc: 90 },
+                { n: "Danse Lames", t: "normal", cat: "Stat", pwr: 0, acc: 100 }
+              ]
+            },
+            { id: 34, name: "Nidoking", type: "Poison / Sol", hp: 141, atk: 107, def: 82, atqSp: 90, defSp: 80, vit: 90, talent: "Sans Limite", desc: "Augmente les dégâts mais retire les effets secondaires.",
+              moves: [
+                { n: "Telluriforce", t: "ground", cat: "Spe", pwr: 90, acc: 100 },
+                { n: "Laser Glace", t: "ice", cat: "Spe", pwr: 90, acc: 100 },
+                { n: "Lance-Flammes", t: "fire", cat: "Spe", pwr: 90, acc: 100 },
+                { n: "Cradovague", t: "poison", cat: "Spe", pwr: 95, acc: 100 }
+              ]
+            },
+            { id: 778, name: "Mimiqui", type: "Spectre / Fée", hp: 115, atk: 95, def: 85, atqSp: 55, defSp: 110, vit: 101, talent: "Fantômasque", desc: "Permet d'encaisser une attaque sans dégâts une seule fois.",
+              moves: [
+                { n: "Câlinerie", t: "fairy", cat: "Phy", pwr: 90, acc: 90 },
+                { n: "Danse Lames", t: "normal", cat: "Stat", pwr: 0, acc: 100 },
+                { n: "Cage Éclair", t: "electric", cat: "Stat", pwr: 0, acc: 90 },
+                { n: "Ball'Ombre", t: "ghost", cat: "Spe", pwr: 80, acc: 100 }
+              ]
+            }
         ];
 
         function ouvrirBoitePC() {
@@ -294,11 +382,9 @@
 
         function selectionnerPokemon(index) {
             const poke = listePokemon[index];
-            // Affiche le NOM + le TYPE
             document.getElementById('pop-name').innerHTML = `${poke.name.toUpperCase()}<br><span style="font-size:0.55em; color:#ccc; font-weight:normal;">${poke.type}</span>`;
             document.getElementById('pop-up-details').style.display = "block";
             
-            // Affichage des barres de Stats
             const containerStats = document.getElementById('stats-container');
             const stats = [
                 {l: 'PV', v: poke.hp}, {l: 'Atq', v: poke.atk}, {l: 'Déf', v: poke.def},
@@ -313,18 +399,18 @@
             containerStats.innerHTML = htmlStats;
             document.getElementById('stat-total').innerText = "Total: " + total;
 
-            // Talent
             document.getElementById('talent-name').innerText = poke.talent;
             document.getElementById('talent-desc').innerText = poke.desc;
 
-            // Attaques (Capacités)
             const containerMoves = document.getElementById('moves-container');
             containerMoves.innerHTML = "";
-            if(poke.moves) {
-                poke.moves.forEach(m => {
-                    containerMoves.innerHTML += `<div class="move-row type-${m.t}"><span class="move-name">${m.n}</span><span class="move-stats">${m.cat} | Pwr: ${m.pwr} | ${m.acc}%</span></div>`;
-                });
-            } else { containerMoves.innerHTML = "<p style='color:#888;'>Attaques bientôt disponibles...</p>"; }
+            poke.moves.forEach(m => {
+                containerMoves.innerHTML += `
+                    <div class="move-row type-${m.t}">
+                        <span class="move-name">${m.n}</span>
+                        <span class="move-stats">${m.cat} | Pwr: ${m.pwr} | ${m.acc}%</span>
+                    </div>`;
+            });
             
             switchTab('stats');
         }
